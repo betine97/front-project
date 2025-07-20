@@ -68,7 +68,6 @@ export const Sidebar: React.FC = () => {
         { name: 'Agentes IA', icon: Bot, path: '/agentes-ia', badge: null },
         { name: 'Relatórios', icon: FileText, path: '/relatorios', badge: null },
         { name: 'Agenda', icon: Calendar, path: '/agenda', badge: null },
-        { name: 'Configurações', icon: Settings, path: '/configuracoes', badge: null },
       ]
     }
   ]

@@ -64,3 +64,15 @@ export interface Estoque {
   // Campos relacionados
   produto?: Produto;
 }
+
+export interface HistoricoPreco {
+  id: number;
+  data_registro: string;
+  id_produto: number;
+  custo_unidade: number;
+  valor_venda: number;
+  markup: number;
+  margem: number;
+  // Campos relacionados
+  produto?: Produto;
+}

@@ -39,7 +39,7 @@ export default function PedidosCompraPage() {
 
   // Função para filtrar pedidos
   const filteredPedidos = allPedidos.filter(pedido => {
-    const matchesSearch = !searchTerm || 
+    const matchesSearch = !searchTerm ||
       pedido.descricao_pedido.toLowerCase().includes(searchTerm.toLowerCase()) ||
       pedido.data_pedido.includes(searchTerm) ||
       pedido.data_entrega.includes(searchTerm);
@@ -67,7 +67,7 @@ export default function PedidosCompraPage() {
   const getStatusEntrega = (dataEntrega: string) => {
     const hoje = new Date();
     const entrega = new Date(dataEntrega);
-    
+
     if (entrega < hoje) {
       return { status: 'entregue', color: 'green', text: 'Entregue' };
     } else {
@@ -183,7 +183,7 @@ export default function PedidosCompraPage() {
               <p className="text-xl font-bold text-gray-900">{totalPedidos}</p>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg p-4 border border-gray-100 hover:border-gray-200 transition-all duration-200">
             <div className="flex items-center justify-between mb-2">
               <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">
@@ -196,7 +196,7 @@ export default function PedidosCompraPage() {
               <p className="text-xl font-bold text-gray-900">{pedidosEntregues}</p>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg p-4 border border-gray-100 hover:border-gray-200 transition-all duration-200">
             <div className="flex items-center justify-between mb-2">
               <div className="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
@@ -209,7 +209,7 @@ export default function PedidosCompraPage() {
               <p className="text-xl font-bold text-gray-900">{pedidosPendentes}</p>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg p-4 border border-gray-100 hover:border-gray-200 transition-all duration-200">
             <div className="flex items-center justify-between mb-2">
               <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
@@ -297,14 +297,12 @@ export default function PedidosCompraPage() {
                           <div className="flex items-center space-x-4">
                             <div className="flex items-center space-x-2">
                               <span className="text-sm font-medium text-gray-900">Pedido #{pedido.id}</span>
-                              <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
-                                statusEntrega.status === 'entregue' 
-                                  ? 'bg-green-50 text-green-600 border border-green-200' 
-                                  : 'bg-orange-50 text-orange-600 border border-orange-200'
-                              }`}>
-                                <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
-                                  statusEntrega.status === 'entregue' ? 'bg-green-500' : 'bg-orange-500'
-                                }`} />
+                              <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${statusEntrega.status === 'entregue'
+                                ? 'bg-green-50 text-green-600 border border-green-200'
+                                : 'bg-orange-50 text-orange-600 border border-orange-200'
+                                }`}>
+                                <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${statusEntrega.status === 'entregue' ? 'bg-green-500' : 'bg-orange-500'
+                                  }`} />
                                 {statusEntrega.text}
                               </span>
                             </div>
@@ -327,7 +325,7 @@ export default function PedidosCompraPage() {
                             </button>
                           </div>
                         </div>
-                        
+
                         <div className="mt-3 grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
                           <div className="flex items-center text-gray-600">
                             <Calendar className="w-4 h-4 mr-2 text-gray-400" />
