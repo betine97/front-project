@@ -3,58 +3,20 @@
 import React, { useState } from 'react'
 import { ChevronDown, ChevronRight } from 'lucide-react'
 
-interface Product {
-  id: string
-  name: string
-  category: string
-  price: number
-  cost: number
-  stock: number
-  minStock: number
-  sku: string
-  status: 'active' | 'inactive' | 'out_of_stock'
-  image?: string
-  description?: string
-  supplier?: string
-  lastSale?: string
-  totalSales: number
-  targetAudience?: string
-  solves?: string
-  benefits?: string[]
-  animalTypes?: string[]
-}
+import { Produto } from '@/types/entities'
 
 interface TreeViewSubcategoriasProps {
-  products: Product[]
+  products: Produto[]
   formatCurrency: (value: number) => string
 }
 
 export const TreeViewSubcategorias: React.FC<TreeViewSubcategoriasProps> = ({ products, formatCurrency }) => {
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set())
 
-  // Agrupar produtos por categoria e subcategoria
+  // Agrupar produtos por categoria e variação
   const categorias = products.reduce((acc, product) => {
-    const categoria = product.category
-    
-    // Inferir subcategoria do nome do produto
-    let subcategoria = 'Geral'
-    
-    if (categoria === 'Alimentação') {
-      if (product.name.toLowerCase().includes('gato')) subcategoria = 'Gatos'
-      else if (product.name.toLowerCase().includes('cão') || product.name.toLowerCase().includes('cachorro')) subcategoria = 'Cães'
-      else if (product.name.toLowerCase().includes('filhote')) subcategoria = 'Filhotes'
-    } else if (categoria === 'Higiene') {
-      if (product.name.toLowerCase().includes('shampoo')) subcategoria = 'Shampoos'
-      else if (product.name.toLowerCase().includes('escova')) subcategoria = 'Escovas'
-    } else if (categoria === 'Brinquedos') {
-      if (product.name.toLowerCase().includes('bola')) subcategoria = 'Bolas'
-      else if (product.name.toLowerCase().includes('interativo')) subcategoria = 'Interativos'
-    } else if (categoria === 'Acessórios') {
-      if (product.name.toLowerCase().includes('coleira')) subcategoria = 'Coleiras'
-    } else if (categoria === 'Medicamentos') {
-      if (product.name.toLowerCase().includes('vermífugo')) subcategoria = 'Vermífugos'
-      else if (product.name.toLowerCase().includes('antipulgas')) subcategoria = 'Antipulgas'
-    }
+    const categoria = product.categoria
+    const subcategoria = product.variacao || 'Geral'
     
     if (!acc[categoria]) {
       acc[categoria] = {}
@@ -67,7 +29,7 @@ export const TreeViewSubcategorias: React.FC<TreeViewSubcategoriasProps> = ({ pr
     acc[categoria][subcategoria].push(product)
     
     return acc
-  }, {} as Record<string, Record<string, Product[]>>)
+  }, {} as Record<string, Record<string, Produto[]>>)
 
   const toggleCategory = (categoria: string) => {
     setExpandedCategories(prev => {
@@ -82,59 +44,48 @@ export const TreeViewSubcategorias: React.FC<TreeViewSubcategoriasProps> = ({ pr
   }
 
   return (
-    <div className="space-y-2">
-      {Object.entries(categorias).map(([categoria, subcategorias]) => {
-        const isExpanded = expandedCategories.has(categoria)
+    <div className="space-y-3">
+      {Object.entries(categorias).map(([categoria, subcategorias], index) => {
         const totalProdutos = Object.values(subcategorias).flat().length
+        const percentage = ((totalProdutos / products.length) * 100).toFixed(0)
+        const maxProdutos = Math.max(...Object.entries(categorias).map(([, subs]) => Object.values(subs).flat().length))
         
         return (
-          <div key={categoria} className="border border-neutral-200 rounded-lg overflow-hidden">
-            <div 
-              className="flex items-center justify-between p-3 bg-neutral-50 cursor-pointer hover:bg-neutral-100 transition-colors"
-              onClick={() => toggleCategory(categoria)}
-            >
-              <div className="flex items-center space-x-2">
-                {isExpanded ? (
-                  <ChevronDown className="w-4 h-4 text-neutral-500" />
-                ) : (
-                  <ChevronRight className="w-4 h-4 text-neutral-500" />
-                )}
-                <span className="font-medium text-neutral-800">{categoria}</span>
+          <div key={categoria} className="flex items-center justify-between py-2">
+            <div className="flex items-center space-x-3 flex-1">
+              <div className="flex items-center space-x-2 min-w-0 flex-1">
+                <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold text-white ${
+                  index === 0 ? 'bg-orange-500' : 
+                  index === 1 ? 'bg-orange-400' : 
+                  index === 2 ? 'bg-orange-300' : 'bg-gray-400'
+                }`}>
+                  {index + 1}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm font-medium text-gray-900 truncate">{categoria}</div>
+                  <div className="text-xs text-gray-500">{totalProdutos} produtos</div>
+                </div>
               </div>
-              <span className="text-xs text-neutral-500 bg-neutral-100 px-2 py-1 rounded-full">
-                {totalProdutos} produtos
-              </span>
+              
+              <div className="flex-1 max-w-[200px] mx-4">
+                <div className="w-full bg-gray-100 rounded-full h-1.5">
+                  <div
+                    className={`h-1.5 rounded-full transition-all duration-500 ${
+                      index < 3 ? 'bg-orange-500' : 'bg-gray-300'
+                    }`}
+                    style={{ 
+                      width: `${(totalProdutos / maxProdutos) * 100}%`,
+                      minWidth: '4px'
+                    }}
+                  />
+                </div>
+              </div>
+              
+              <div className="text-right">
+                <div className="text-sm font-bold text-gray-900">{totalProdutos}</div>
+                <div className="text-xs text-gray-500">{percentage}%</div>
+              </div>
             </div>
-            
-            {isExpanded && (
-              <div className="p-3 space-y-3 bg-white">
-                {Object.entries(subcategorias).map(([subcategoria, produtos]) => (
-                  <div key={subcategoria} className="pl-4 border-l-2 border-neutral-200">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-sm font-medium text-neutral-700">{subcategoria}</span>
-                      <span className="text-xs text-neutral-500">
-                        {produtos.length} {produtos.length === 1 ? 'produto' : 'produtos'}
-                      </span>
-                    </div>
-                    
-                    <div className="space-y-1 pl-3">
-                      {produtos.slice(0, 3).map(produto => (
-                        <div key={produto.id} className="text-xs text-neutral-600 flex items-center justify-between">
-                          <span className="truncate max-w-[200px]">{produto.name}</span>
-                          <span className="text-primary font-medium">{formatCurrency(produto.price)}</span>
-                        </div>
-                      ))}
-                      
-                      {produtos.length > 3 && (
-                        <div className="text-xs text-neutral-400 italic">
-                          + {produtos.length - 3} mais...
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
         )
       })}

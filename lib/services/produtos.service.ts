@@ -13,41 +13,64 @@ export class ProdutosService {
     categoria?: string;
     marca?: string;
   }): Promise<PaginatedResponse<Produto>> {
-    const searchParams = new URLSearchParams();
-    
-    if (params?.page) searchParams.set('page', params.page.toString());
-    if (params?.limit) searchParams.set('limit', params.limit.toString());
-    if (params?.search) searchParams.set('search', params.search);
-    if (params?.categoria) searchParams.set('categoria', params.categoria);
-    if (params?.marca) searchParams.set('marca', params.marca);
+    // A API retorna um array direto, então vamos simular a paginação no frontend
+    const response = await apiClient.get<Produto[]>(this.endpoint);
+    let produtos = response.data;
 
-    const query = searchParams.toString();
-    const endpoint = query ? `${this.endpoint}?${query}` : this.endpoint;
-    
-    const response = await apiClient.get<PaginatedResponse<Produto>>(endpoint);
-    return response.data;
+    // Aplicar filtros
+    if (params?.search) {
+      const searchLower = params.search.toLowerCase();
+      produtos = produtos.filter(p => 
+        p.nome_produto.toLowerCase().includes(searchLower) ||
+        p.descricao.toLowerCase().includes(searchLower) ||
+        p.sku.toLowerCase().includes(searchLower)
+      );
+    }
+
+    if (params?.categoria) {
+      produtos = produtos.filter(p => p.categoria === params.categoria);
+    }
+
+    if (params?.marca) {
+      produtos = produtos.filter(p => p.marca === params.marca);
+    }
+
+    // Simular paginação
+    const page = params?.page || 1;
+    const limit = params?.limit || 10;
+    const startIndex = (page - 1) * limit;
+    const endIndex = startIndex + limit;
+    const paginatedProdutos = produtos.slice(startIndex, endIndex);
+
+    return {
+      data: paginatedProdutos,
+      total: produtos.length,
+      page,
+      limit,
+      totalPages: Math.ceil(produtos.length / limit)
+    };
   }
 
-  async getById(id: string): Promise<Produto> {
+  async getById(id: number): Promise<Produto> {
     const response = await apiClient.get<Produto>(`${this.endpoint}/${id}`);
     return response.data;
   }
 
-  async create(produto: Omit<Produto, 'id' | 'dataCadastro'>): Promise<Produto> {
+  async create(produto: Omit<Produto, 'id'>): Promise<Produto> {
     const response = await apiClient.post<Produto>(this.endpoint, produto);
     return response.data;
   }
 
-  async update(id: string, produto: Partial<Produto>): Promise<Produto> {
+  async update(id: number, produto: Partial<Produto>): Promise<Produto> {
     const response = await apiClient.put<Produto>(`${this.endpoint}/${id}`, produto);
     return response.data;
   }
 
-  async delete(id: string): Promise<void> {
+  async delete(id: number): Promise<void> {
     await apiClient.delete(`${this.endpoint}/${id}`);
   }
 
-  async updateEstoque(id: string, quantidade: number): Promise<Produto> {
+  async updateEstoque(id: number, quantidade: number): Promise<Produto> {
     const response = await apiClient.put<Produto>(`${this.endpoint}/${id}/estoque`, {
       quantidade
     });

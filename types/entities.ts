@@ -1,15 +1,14 @@
 // Entidades principais do negócio
 
 export interface Produto {
-  id: string;
-  nome: string;
-  descricao?: string;
-  preco: number;
+  id: number;
+  codigo_barra: string;
+  nome_produto: string;
+  sku: string;
   categoria: string;
-  subcategoria?: string;
+  destinado_para: string;
+  variacao: string;
   marca: string;
-  estoque: number;
-  estoqueMinimo: number;
-  ativo: boolean;
-  dataCadastro: Date;
+  descricao: string;
+  status: 'ativo' | 'inativo';
 }

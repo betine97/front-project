@@ -4,7 +4,7 @@ import { ApiResponse, ApiError } from '@/types/api';
 class ApiClient {
   private baseURL: string;
 
-  constructor(baseURL: string = '/api') {
+  constructor(baseURL: string = 'http://localhost:8080/api') {
     this.baseURL = baseURL;
   }
 
@@ -13,7 +13,7 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
-    
+
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
@@ -24,13 +24,18 @@ class ApiClient {
 
     try {
       const response = await fetch(url, config);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
-      return data;
+
+      // A API retorna dados diretamente, então vamos envolver em um formato padrão
+      return {
+        data,
+        success: true
+      };
     } catch (error) {
       throw this.handleError(error);
     }

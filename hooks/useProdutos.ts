@@ -35,7 +35,7 @@ export function useProdutos(params: UseProdutosParams = {}) {
     }
   };
 
-  const createProduto = async (produto: Omit<Produto, 'id' | 'dataCadastro'>) => {
+  const createProduto = async (produto: Omit<Produto, 'id'>) => {
     try {
       const novoProduto = await produtosService.create(produto);
       setProdutos(prev => [novoProduto, ...prev]);
@@ -45,7 +45,7 @@ export function useProdutos(params: UseProdutosParams = {}) {
     }
   };
 
-  const updateProduto = async (id: string, produto: Partial<Produto>) => {
+  const updateProduto = async (id: number, produto: Partial<Produto>) => {
     try {
       const produtoAtualizado = await produtosService.update(id, produto);
       setProdutos(prev => 
@@ -57,7 +57,7 @@ export function useProdutos(params: UseProdutosParams = {}) {
     }
   };
 
-  const deleteProduto = async (id: string) => {
+  const deleteProduto = async (id: number) => {
     try {
       await produtosService.delete(id);
       setProdutos(prev => prev.filter(p => p.id !== id));
