@@ -53,7 +53,7 @@ export function ProdutoCard({ produto, onView, onEdit, onDelete }: ProdutoCardPr
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <span className="text-lg font-bold text-primary">
-                  {formatCurrency(produto.preco)}
+                  {formatCurrency(produto.preco_venda)}
                 </span>
                 <span className="text-xs text-neutral-500">
                   Estoque: {produto.estoque}

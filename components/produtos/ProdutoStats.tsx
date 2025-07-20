@@ -12,7 +12,7 @@ interface ProdutoStatsProps {
 export function ProdutoStats({ produtos }: ProdutoStatsProps) {
   const totalProdutos = produtos.length;
   const produtosAtivos = produtos.filter(p => p.ativo).length;
-  const totalValue = produtos.reduce((sum, p) => sum + (p.preco * p.estoque), 0);
+  const totalValue = produtos.reduce((sum, p) => sum + (p.preco_venda * p.estoque), 0);
   const lowStockProducts = produtos.filter(p => p.estoque <= p.estoqueMinimo).length;
 
   const stats = [

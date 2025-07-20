@@ -54,7 +54,7 @@ export function ProdutoTable({ produtos, onView, onEdit, onDelete }: ProdutoTabl
                 <td className="py-3 px-4 text-neutral-600">{produto.categoria}</td>
                 <td className="py-3 px-4 text-neutral-600">{produto.marca}</td>
                 <td className="py-3 px-4 font-semibold text-primary">
-                  {formatCurrency(produto.preco)}
+                  {formatCurrency(produto.preco_venda)}
                 </td>
                 <td className="py-3 px-4">
                   <div className="flex items-center space-x-2">

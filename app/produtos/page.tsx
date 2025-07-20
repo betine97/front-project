@@ -53,7 +53,7 @@ export default function ProdutosPage() {
   // Função para filtrar produtos apenas para a listagem (não afeta gráficos)
   const filteredProdutos = allProdutos.filter(produto => {
     // Filtro de busca por nome, SKU ou descrição
-    const matchesSearch = !searchTerm || 
+    const matchesSearch = !searchTerm ||
       produto.nome_produto.toLowerCase().includes(searchTerm.toLowerCase()) ||
       produto.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
       produto.descricao.toLowerCase().includes(searchTerm.toLowerCase());
@@ -72,8 +72,8 @@ export default function ProdutosPage() {
     const matchesVariacao = !selectedVariacao || produto.variacao === selectedVariacao;
     const matchesCodigoBarras = !codigoBarras || produto.codigo_barra.toLowerCase().includes(codigoBarras.toLowerCase());
 
-    return matchesSearch && matchesCategory && matchesMarca && matchesStatus && 
-           matchesDestinadoPara && matchesVariacao && matchesCodigoBarras;
+    return matchesSearch && matchesCategory && matchesMarca && matchesStatus &&
+      matchesDestinadoPara && matchesVariacao && matchesCodigoBarras;
   });
 
   // Aplicar ordenação aos produtos filtrados
@@ -237,7 +237,7 @@ export default function ProdutosPage() {
               <p className="text-xl font-bold text-gray-900">{produtosParaGraficos.length}</p>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg p-4 border border-gray-100 hover:border-gray-200 transition-all duration-200">
             <div className="flex items-center justify-between mb-2">
               <div className="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
@@ -252,7 +252,7 @@ export default function ProdutosPage() {
               <p className="text-xl font-bold text-gray-900">{produtosParaGraficos.filter(p => p.status === 'ativo').length}</p>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg p-4 border border-gray-100 hover:border-gray-200 transition-all duration-200">
             <div className="flex items-center justify-between mb-2">
               <div className="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
@@ -267,7 +267,7 @@ export default function ProdutosPage() {
               </p>
             </div>
           </div>
-          
+
           <div className="bg-white rounded-lg p-4 border border-gray-100 hover:border-gray-200 transition-all duration-200">
             <div className="flex items-center justify-between mb-2">
               <div className="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center">
@@ -374,13 +374,12 @@ export default function ProdutosPage() {
             </select>
 
             {/* Advanced Filters Button */}
-            <button 
+            <button
               onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-              className={`px-3 py-2 border border-gray-200 rounded-lg transition-colors duration-200 flex items-center space-x-2 ${
-                showAdvancedFilters 
-                  ? 'bg-orange-50 border-orange-200 text-orange-700' 
-                  : 'bg-gray-50 hover:bg-gray-100 text-gray-600'
-              }`}
+              className={`px-3 py-2 border border-gray-200 rounded-lg transition-colors duration-200 flex items-center space-x-2 ${showAdvancedFilters
+                ? 'bg-orange-50 border-orange-200 text-orange-700'
+                : 'bg-gray-50 hover:bg-gray-100 text-gray-600'
+                }`}
             >
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.414A1 1 0 013 6.707V4z" />
@@ -397,7 +396,7 @@ export default function ProdutosPage() {
             <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="text-sm font-semibold text-gray-900">Filtros Avançados</h4>
-                <button 
+                <button
                   onClick={() => {
                     setSelectedCategory('');
                     setSelectedMarca('');
@@ -413,11 +412,11 @@ export default function ProdutosPage() {
                   Limpar todos
                 </button>
               </div>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Destinado Para</label>
-                  <select 
+                  <select
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-sm"
                     value={selectedDestinadoPara}
                     onChange={(e) => setSelectedDestinadoPara(e.target.value)}
@@ -431,7 +430,7 @@ export default function ProdutosPage() {
 
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Variação</label>
-                  <select 
+                  <select
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-sm"
                     value={selectedVariacao}
                     onChange={(e) => setSelectedVariacao(e.target.value)}
@@ -456,7 +455,7 @@ export default function ProdutosPage() {
 
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-1">Ordenar por</label>
-                  <select 
+                  <select
                     className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white text-sm"
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
@@ -475,7 +474,7 @@ export default function ProdutosPage() {
                   {produtos.length} produtos encontrados
                 </div>
                 <div className="flex space-x-2">
-                  <button 
+                  <button
                     onClick={() => setShowAdvancedFilters(false)}
                     className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors duration-200"
                   >
@@ -541,14 +540,12 @@ export default function ProdutosPage() {
                   <div key={produto.id} className="group bg-white border border-gray-200 rounded-lg p-4 hover:border-orange-300 hover:shadow-md transition-all duration-200 cursor-pointer">
                     {/* Status Badge */}
                     <div className="flex justify-between items-start mb-3">
-                      <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
-                        produto.status === 'ativo' 
-                          ? 'bg-green-50 text-green-600 border border-green-200' 
-                          : 'bg-red-50 text-red-600 border border-red-200'
-                      }`}>
-                        <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
-                          produto.status === 'ativo' ? 'bg-green-500' : 'bg-red-500'
-                        }`} />
+                      <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${produto.status === 'ativo'
+                        ? 'bg-green-50 text-green-600 border border-green-200'
+                        : 'bg-red-50 text-red-600 border border-red-200'
+                        }`}>
+                        <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${produto.status === 'ativo' ? 'bg-green-500' : 'bg-red-500'
+                          }`} />
                         {produto.status === 'ativo' ? 'Ativo' : 'Inativo'}
                       </span>
                     </div>
@@ -566,12 +563,12 @@ export default function ProdutosPage() {
                         <span className="text-gray-500">Marca:</span>
                         <span className="text-gray-900 font-medium">{produto.marca}</span>
                       </div>
-                      
+
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-gray-500">Para:</span>
                         <span className="text-orange-600 font-medium">{produto.destinado_para}</span>
                       </div>
-                      
+
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-gray-500">Tipo:</span>
                         <span className="text-gray-700">{produto.variacao}</span>
@@ -602,7 +599,7 @@ export default function ProdutosPage() {
                         </svg>
                         <span>Ver</span>
                       </button>
-                      
+
                       <button
                         onClick={() => handleEditProduct(produto)}
                         className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-medium px-3 py-2 rounded-md text-xs transition-colors duration-150 flex items-center justify-center space-x-1"
@@ -628,6 +625,7 @@ export default function ProdutosPage() {
                       <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Marca</th>
                       <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Destinado Para</th>
                       <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Variação</th>
+                      <th className="text-right py-3 px-4 font-semibold text-gray-700 text-sm">Preço</th>
                       <th className="text-left py-3 px-4 font-semibold text-gray-700 text-sm">Status</th>
                       <th className="text-right py-3 px-4 font-semibold text-gray-700 text-sm">Ações</th>
                     </tr>
@@ -665,15 +663,18 @@ export default function ProdutosPage() {
                         <td className="py-4 px-4">
                           <span className="text-sm text-gray-700">{produto.variacao}</span>
                         </td>
+                        <td className="py-4 px-4 text-right">
+                          <span className="text-sm font-bold text-green-600">
+                            {formatCurrency(produto.preco_venda)}
+                          </span>
+                        </td>
                         <td className="py-4 px-4">
-                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
-                            produto.status === 'ativo' 
-                              ? 'bg-green-50 text-green-700 border border-green-200' 
-                              : 'bg-red-50 text-red-700 border border-red-200'
-                          }`}>
-                            <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${
-                              produto.status === 'ativo' ? 'bg-green-400' : 'bg-red-400'
-                            }`} />
+                          <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${produto.status === 'ativo'
+                            ? 'bg-green-50 text-green-700 border border-green-200'
+                            : 'bg-red-50 text-red-700 border border-red-200'
+                            }`}>
+                            <div className={`w-1.5 h-1.5 rounded-full mr-1.5 ${produto.status === 'ativo' ? 'bg-green-400' : 'bg-red-400'
+                              }`} />
                             {produto.status === 'ativo' ? 'Ativo' : 'Inativo'}
                           </span>
                         </td>
@@ -695,7 +696,7 @@ export default function ProdutosPage() {
                               title="Editar produto"
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                               </svg>
                             </button>
                             <button
@@ -861,14 +862,12 @@ export default function ProdutosPage() {
                   <div>
                     <h3 className="text-2xl font-bold text-gray-900 mb-2">{selectedProduct.nome_produto}</h3>
                     <div className="flex items-center space-x-3">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                        selectedProduct.status === 'ativo' 
-                          ? 'bg-green-50 text-green-700 border border-green-200' 
-                          : 'bg-red-50 text-red-700 border border-red-200'
-                      }`}>
-                        <div className={`w-2 h-2 rounded-full mr-2 ${
-                          selectedProduct.status === 'ativo' ? 'bg-green-400' : 'bg-red-400'
-                        }`} />
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${selectedProduct.status === 'ativo'
+                        ? 'bg-green-50 text-green-700 border border-green-200'
+                        : 'bg-red-50 text-red-700 border border-red-200'
+                        }`}>
+                        <div className={`w-2 h-2 rounded-full mr-2 ${selectedProduct.status === 'ativo' ? 'bg-green-400' : 'bg-red-400'
+                          }`} />
                         {selectedProduct.status === 'ativo' ? 'Ativo' : 'Inativo'}
                       </span>
                       <span className="text-sm text-gray-500">ID: {selectedProduct.id}</span>

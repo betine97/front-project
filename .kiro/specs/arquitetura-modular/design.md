@@ -409,7 +409,7 @@ describe('ProdutoCard', () => {
     render(<ProdutoCard produto={mockProduto} onView={jest.fn()} />);
     
     expect(screen.getByText(mockProduto.nome)).toBeInTheDocument();
-    expect(screen.getByText(formatCurrency(mockProduto.preco))).toBeInTheDocument();
+    expect(screen.getByText(formatCurrency(mockProduto.preco_venda))).toBeInTheDocument();
   });
 });
 ```

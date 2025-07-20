@@ -14,8 +14,13 @@ export class ProdutosService {
     marca?: string;
   }): Promise<PaginatedResponse<Produto>> {
     // A API retorna um array direto, então vamos simular a paginação no frontend
-    const response = await apiClient.get<Produto[]>(this.endpoint);
-    let produtos = response.data;
+    const response = await apiClient.get<any[]>(this.endpoint);
+    let produtos = response.data.map((produto: any) => ({
+      ...produto,
+      preco_venda: typeof produto.preco_venda === 'string' 
+        ? parseFloat(produto.preco_venda.replace(',', '.'))
+        : produto.preco_venda
+    }));
 
     // Aplicar filtros
     if (params?.search) {
@@ -52,18 +57,33 @@ export class ProdutosService {
   }
 
   async getById(id: number): Promise<Produto> {
-    const response = await apiClient.get<Produto>(`${this.endpoint}/${id}`);
-    return response.data;
+    const response = await apiClient.get<any>(`${this.endpoint}/${id}`);
+    return {
+      ...response.data,
+      preco_venda: typeof response.data.preco_venda === 'string' 
+        ? parseFloat(response.data.preco_venda.replace(',', '.'))
+        : response.data.preco_venda
+    };
   }
 
   async create(produto: Omit<Produto, 'id'>): Promise<Produto> {
-    const response = await apiClient.post<Produto>(this.endpoint, produto);
-    return response.data;
+    const response = await apiClient.post<any>(this.endpoint, produto);
+    return {
+      ...response.data,
+      preco_venda: typeof response.data.preco_venda === 'string' 
+        ? parseFloat(response.data.preco_venda.replace(',', '.'))
+        : response.data.preco_venda
+    };
   }
 
   async update(id: number, produto: Partial<Produto>): Promise<Produto> {
-    const response = await apiClient.put<Produto>(`${this.endpoint}/${id}`, produto);
-    return response.data;
+    const response = await apiClient.put<any>(`${this.endpoint}/${id}`, produto);
+    return {
+      ...response.data,
+      preco_venda: typeof response.data.preco_venda === 'string' 
+        ? parseFloat(response.data.preco_venda.replace(',', '.'))
+        : response.data.preco_venda
+    };
   }
 
   async delete(id: number): Promise<void> {

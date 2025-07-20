@@ -53,7 +53,7 @@ export function ProdutoDetailModal({ produto, onClose }: ProdutoDetailModalProps
             <div className="space-y-3">
               <div>
                 <p className="text-sm font-medium text-neutral-700">Preço de Venda</p>
-                <p className="text-xl font-bold text-primary">{formatCurrency(produto.preco)}</p>
+                <p className="text-xl font-bold text-primary">{formatCurrency(produto.preco_venda)}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-neutral-700">Data de Cadastro</p>
