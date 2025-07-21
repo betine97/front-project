@@ -76,21 +76,11 @@ export const Sidebar: React.FC = () => {
     <>
       <style jsx>{`
         .custom-scrollbar::-webkit-scrollbar {
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: #ea580c;
-          border-radius: 2px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: #dc2626;
+          display: none;
         }
         .custom-scrollbar {
-          scrollbar-width: thin;
-          scrollbar-color: #ea580c transparent;
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
       `}</style>
       <aside className={`bg-white border-r border-gray-200 h-screen transition-all duration-300 flex flex-col ${collapsed ? 'w-28' : 'w-72'}`}>

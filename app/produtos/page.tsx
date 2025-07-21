@@ -1,13 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Package, Plus, ShoppingCart, PieChart, BarChart3 } from 'lucide-react';
+import { Package, Plus, ShoppingCart, PieChart, BarChart3, Expand } from 'lucide-react';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 // Componentes antigos temporariamente removidos
 // import { ProductModal } from '../../components/produtos/ProductModal';
 // import { NewOrderModal } from '../../components/produtos/NewOrderModal';
 import { TreeViewSubcategorias } from '../../components/produtos/TreeViewSubcategorias';
 import { DistribuicaoMarcasProdutos } from '../../components/produtos/DistribuicaoMarcasProdutos';
+import { DistribuicaoCategoriasProdutos } from '../../components/produtos/DistribuicaoCategoriasProdutos';
+import { MarcasPorCategoria } from '../../components/produtos/MarcasPorCategoria';
 import { HistoricoPrecosModal } from '../../components/produtos/HistoricoPrecosModal';
 // Componentes temporariamente comentados até serem criados
 // import { ProdutoCard } from '../../components/produtos/ProdutoCard';
@@ -207,7 +209,7 @@ export default function ProdutosPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6" style={{ padding: '2rem' }}>
+      <div className="space-y-3" style={{ padding: '4rem' }}>
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
@@ -238,8 +240,8 @@ export default function ProdutosPage() {
         </div>
 
         {/* Stats Cards - Estilo Itaú */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="card-metric" style={{ padding: '16px' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="card-metric" style={{ padding: '12px' }}>
             <div className="flex items-center justify-between mb-3">
               <div className="icon-container orange" style={{ width: '32px', height: '32px', marginBottom: '0' }}>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -305,8 +307,8 @@ export default function ProdutosPage() {
 
 
         {/* Charts Row - Estilo Itaú */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div className="card" style={{ padding: '16px' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="card" style={{ padding: '12px' }}>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-2">
                 <div className="icon-container orange" style={{ width: '32px', height: '32px', marginBottom: '0' }}>
@@ -317,9 +319,20 @@ export default function ProdutosPage() {
                   <p className="text-xs text-gray-500">Distribuição de produtos</p>
                 </div>
               </div>
+              <button
+                onClick={() => {
+                  // Vamos acessar a função de abrir modal do componente
+                  const expandButton = document.querySelector('[data-expand-marcas]');
+                  if (expandButton) expandButton.click();
+                }}
+                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors group"
+                title="Ver gráfico completo"
+              >
+                <Expand className="w-4 h-4 text-gray-500 group-hover:text-orange-500" />
+              </button>
             </div>
-            <div style={{ height: '200px', overflow: 'hidden' }}>
-              <DistribuicaoMarcasProdutos products={produtosParaGraficos} />
+            <div style={{ height: '250px', overflow: 'auto' }}>
+              <DistribuicaoMarcasProdutos />
             </div>
           </div>
 
@@ -334,9 +347,20 @@ export default function ProdutosPage() {
                   <p className="text-xs text-gray-500">Distribuição por categoria</p>
                 </div>
               </div>
+              <button
+                onClick={() => {
+                  // Vamos acessar a função de abrir modal do componente
+                  const expandButton = document.querySelector('[data-expand-categorias]');
+                  if (expandButton) expandButton.click();
+                }}
+                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors group"
+                title="Ver gráfico completo"
+              >
+                <Expand className="w-4 h-4 text-gray-500 group-hover:text-orange-500" />
+              </button>
             </div>
-            <div style={{ height: '200px', overflow: 'hidden' }}>
-              <TreeViewSubcategorias products={produtosParaGraficos} formatCurrency={formatCurrency} />
+            <div style={{ height: '250px', overflow: 'auto' }}>
+              <DistribuicaoCategoriasProdutos />
             </div>
           </div>
 
@@ -349,20 +373,24 @@ export default function ProdutosPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900">Categoria por Marca</h3>
+                  <h3 className="text-sm font-semibold text-gray-900">Marcas por Categoria</h3>
                   <p className="text-xs text-gray-500">Relação categoria/marca</p>
                 </div>
               </div>
+              <button
+                onClick={() => {
+                  // Vamos acessar a função de abrir modal do componente
+                  const expandButton = document.querySelector('[data-expand-marcas-categoria]');
+                  if (expandButton) expandButton.click();
+                }}
+                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors group"
+                title="Ver gráfico completo"
+              >
+                <Expand className="w-4 h-4 text-gray-500 group-hover:text-orange-500" />
+              </button>
             </div>
-            <div style={{ height: '200px', overflow: 'hidden' }}>
-              <div className="flex items-center justify-center h-full text-xs text-gray-500">
-                <div className="text-center">
-                  <div style={{ width: '24px', height: '24px', backgroundColor: '#F3F4F6', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px' }}>
-                    <BarChart3 className="w-3 h-3 text-gray-500" />
-                  </div>
-                  <p>Gráfico em desenvolvimento</p>
-                </div>
-              </div>
+            <div style={{ height: '250px', overflow: 'hidden' }}>
+              <MarcasPorCategoria />
             </div>
           </div>
         </div>
