@@ -11,6 +11,8 @@ import { PedidoCompra, ItemPedido } from '../../types/entities';
 import { formatCurrency } from '../../lib/utils';
 import { MESSAGES } from '../../constants/index';
 
+
+
 export default function PedidosCompraPage() {
   // Estados locais para UI
   const [searchTerm, setSearchTerm] = useState('');
@@ -89,7 +91,7 @@ export default function PedidosCompraPage() {
       const dataComparacao = tipoData === 'pedido' ? new Date(pedido.data_pedido) : new Date(pedido.data_entrega);
       const inicio = dataInicio ? new Date(dataInicio) : null;
       const fim = dataFim ? new Date(dataFim) : null;
-      
+
       if (inicio && dataComparacao < inicio) matchesPeriodo = false;
       if (fim && dataComparacao > fim) matchesPeriodo = false;
     }
@@ -105,7 +107,7 @@ export default function PedidosCompraPage() {
     if (!tipoOrdenacao || !direcaoOrdenacao) return 0;
 
     let comparison = 0;
-    
+
     if (tipoOrdenacao === 'data') {
       const dataA = campoOrdenacao === 'entrega' ? new Date(a.data_entrega) : new Date(a.data_pedido);
       const dataB = campoOrdenacao === 'entrega' ? new Date(b.data_entrega) : new Date(b.data_pedido);
@@ -357,7 +359,7 @@ export default function PedidosCompraPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                
+
                 {showProductsDropdown && (
                   <div className="absolute top-full left-0 mt-1 w-64 bg-white border border-gray-200 rounded-lg shadow-xl z-[99999] max-h-60 overflow-y-auto">
                     {produtos.map(produto => (
@@ -406,7 +408,7 @@ export default function PedidosCompraPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                
+
                 {showValueRange && (
                   <div className="absolute top-full right-0 mt-1 w-80 bg-white border border-gray-200 rounded-lg shadow-xl z-[99999] p-4">
                     <div className="space-y-3">
@@ -466,7 +468,7 @@ export default function PedidosCompraPage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-                
+
                 {showDateRange && (
                   <div className="absolute top-full right-0 mt-1 w-80 bg-white border border-gray-200 rounded-lg shadow-xl z-[99999] p-4">
                     <div className="space-y-3">
@@ -543,7 +545,7 @@ export default function PedidosCompraPage() {
                   </svg>
                   <span className="text-sm font-medium text-gray-700">Ordenar por:</span>
                 </div>
-                
+
                 {/* Tipo de Ordenação */}
                 <select
                   className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white transition-colors duration-200 text-sm min-w-[120px]"
@@ -769,70 +771,86 @@ export default function PedidosCompraPage() {
                         </div>
                       </div>
 
-                        <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-xs text-gray-500">
-                          <span>Pedido: {formatDate(pedido.data_pedido)}</span>
-                          <span>Entrega: {formatDate(pedido.data_entrega)}</span>
-                          <span>Frete: {formatCurrency(pedido.valor_frete)}</span>
-                          <span>Produtos: {formatCurrency(pedido.custo_pedido)}</span>
-                        </div>
+                      <div className="mt-2 flex flex-wrap gap-x-6 gap-y-1 text-xs text-gray-500">
+                        <span>Pedido: {formatDate(pedido.data_pedido)}</span>
+                        <span>Entrega: {formatDate(pedido.data_entrega)}</span>
+                        <span>Frete: {formatCurrency(pedido.valor_frete)}</span>
+                        <span>Produtos: {formatCurrency(pedido.custo_pedido)}</span>
+                      </div>
 
-                        {pedido.descricao_pedido && (
-                          <div className="mt-1.5 text-xs text-gray-500">
-                            {pedido.descricao_pedido}
-                          </div>
-                        )}
-                    </div>
-
-                    {/* Detalhes dos Itens (Expandível) */}
-                      {isExpanded && (
-                        <div className="px-4 pb-3 pt-2 border-t border-gray-100 bg-gray-50">
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="text-xs font-medium text-gray-700">Itens do Pedido</h4>
-                            <span className="text-xs text-gray-500">
-                              {itensPedido.length} {itensPedido.length === 1 ? 'item' : 'itens'}
-                            </span>
-                          </div>
-                          <div className="bg-white rounded-lg overflow-hidden border">
-                            <table className="w-full text-xs">
-                              <thead className="bg-gray-50">
-                                <tr className="border-b border-gray-200">
-                                  <th className="text-left py-2 px-4 font-medium text-gray-600 w-auto">Produto</th>
-                                  <th className="text-center py-2 px-4 font-medium text-gray-600 w-20">Qtd.</th>
-                                  <th className="text-right py-2 px-4 font-medium text-gray-600 w-40">Unit.</th>
-                                  <th className="text-right py-2 px-4 font-medium text-gray-600 w-44">Total</th>
-                                  <th className="w-full"></th>
-                                </tr>
-                              </thead>
-                              <tbody className="divide-y divide-gray-100">
-                                {itensPedido.map(item => (
-                                  <tr key={item.id} className="hover:bg-gray-50 transition-colors duration-150">
-                                    <td className="py-2 px-4 text-gray-900 font-medium w-auto">{getProdutoNome(item.id_produto)}</td>
-                                    <td className="py-2 px-4 text-center text-gray-600 w-20">{item.quantidade}</td>
-                                    <td className="py-2 px-4 text-right text-gray-600 font-mono w-40">{formatCurrency(item.preco_unitario)}</td>
-                                    <td className="py-2 px-4 text-right font-semibold text-gray-900 font-mono w-44">{formatCurrency(item.subtotal)}</td>
-                                    <td className="w-full"></td>
-                                  </tr>
-                                ))}
-                              </tbody>
-                            </table>
-                          </div>
+                      {pedido.descricao_pedido && (
+                        <div className="mt-1.5 text-xs text-gray-500">
+                          {pedido.descricao_pedido}
                         </div>
                       )}
                     </div>
-                  );
-                })
-              )}
-            </div>
+
+                    {/* Detalhes dos Itens (Expandível) */}
+                    {isExpanded && (
+                      <div className="px-4 pb-3 pt-2 border-t border-gray-100 bg-gray-50">
+                        <div className="flex items-center justify-between mb-2">
+                          <h4 className="text-xs font-medium text-gray-700">Itens do Pedido</h4>
+                          <span className="text-xs text-gray-500">
+                            {itensPedido.length} {itensPedido.length === 1 ? 'item' : 'itens'}
+                          </span>
+                        </div>
+                        <div className="bg-white rounded-lg overflow-hidden border">
+                          <table className="w-full text-xs">
+                            <thead className="bg-gray-50">
+                              <tr className="border-b border-gray-200">
+                                <th className="text-left py-2 px-12 font-medium text-gray-600 w-auto">Produto</th>
+                                <th className="text-center py-2 px-12 font-medium text-gray-600 w-20">Qtd.</th>
+                                <th className="text-left py-2 px-12 font-medium text-gray-600 w-40">Unit.</th>
+                                <th className="text-left py-2 px-12 font-medium text-gray-600 w-44">Total</th>
+                                <th className="w-full"></th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100">
+                              {itensPedido.map(item => (
+                                <tr key={item.id} className="hover:bg-gray-50 transition-colors duration-150">
+                                  <td className="py-2 px-12 text-gray-900 font-medium w-auto">{getProdutoNome(item.id_produto)}</td>
+                                  <td className="py-2 px-12 text-center text-gray-600 w-20">{item.quantidade}</td>
+                                  <td className="py-2 px-12 text-gray-600 font-mono" style={{
+                                    textAlign: 'left',
+                                    width: '140px',
+                                    minWidth: '140px',
+                                    fontFamily: 'JetBrains Mono, monospace',
+                                    fontSize: '12px'
+                                  }}>
+                                    {formatCurrency(item.preco_unitario)}
+                                  </td>
+                                  <td className="py-2 px-12 font-semibold text-gray-900 font-mono" style={{
+                                    textAlign: 'left',
+                                    width: '160px',
+                                    minWidth: '160px',
+                                    fontFamily: 'JetBrains Mono, monospace',
+                                    fontSize: '12px'
+                                  }}>
+                                    {formatCurrency(item.subtotal)}
+                                  </td>
+                                  <td className="w-full"></td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
+      </div>
 
-        {/* Modal de Novo/Editar Pedido */}
-        <NewPedidoModal
-          isOpen={showModal}
-          onClose={() => setShowModal(false)}
-          pedido={editingPedido}
-          onSave={handleSavePedido}
-        />
-      </DashboardLayout>
-    );
-  }
+      {/* Modal de Novo/Editar Pedido */}
+      <NewPedidoModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        pedido={editingPedido}
+        onSave={handleSavePedido}
+      />
+    </DashboardLayout>
+  );
+}
