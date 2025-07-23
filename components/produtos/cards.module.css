@@ -1,0 +1,115 @@
+/* Cards Module - Produtos */
+
+.cardBase {
+  width: 100%;
+  background: white;
+  border: 1px solid var(--color-neutral-100);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-base);
+  padding: var(--spacing-4);
+}
+
+.cardBase:hover {
+  box-shadow: var(--shadow-lg);
+  transform: translateY(-2px);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-4);
+}
+
+.cardIconContainer {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardIconContainer.orange {
+  background: var(--gradient-primary);
+  color: white;
+}
+
+.cardIconContainer.green {
+  background: var(--gradient-success);
+  color: white;
+}
+
+.cardIconContainer.purple {
+  background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%);
+  color: white;
+}
+
+.cardIconContainer.gray {
+  background: var(--color-neutral-500);
+  color: white;
+}
+
+.cardTitle {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-neutral-900);
+}
+
+.cardSubtitle {
+  font-size: var(--font-size-xs);
+  color: var(--color-neutral-500);
+}
+
+.cardContent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.cardContentCenter {
+  text-align: center;
+}
+
+.cardContentIcon {
+  width: 48px;
+  height: 48px;
+  background-color: var(--color-neutral-50);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--spacing-3);
+}
+
+.cardContentIconLarge {
+  width: 64px;
+  height: 64px;
+  background-color: var(--color-neutral-50);
+  border-radius: var(--radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--spacing-4);
+}
+
+.cardContentText {
+  font-size: var(--font-size-sm);
+  color: var(--color-neutral-500);
+}
+
+/* Tamanhos específicos */
+.cardOne {
+  height: 16rem;
+}
+
+.cardTwo,
+.cardThree {
+  height: 33.5rem;
+}
+
+.cardFour {
+  height: 16rem;
+}

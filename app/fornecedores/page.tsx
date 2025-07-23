@@ -105,7 +105,7 @@ export default function FornecedoresPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-3" style={{ paddingLeft: '4rem', paddingTop: '4rem', paddingBottom: '4rem', paddingRight: '6rem' }}>
+      <div className="p-6 max-w-full overflow-x-hidden space-y-3">
         {/* Header Simplificado */}
         <div>
           <p className="text-sm text-gray-600 font-medium">Gerencie seus fornecedores</p>

@@ -1,66 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
 
+/* Importar Design Tokens */
+@import '../styles/design-tokens.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Design Tokens - Itaú Inspired */
-:root {
-  /* Colors - Itaú Primary */
-  --color-primary-50: #FFF3E6;
-  --color-primary-100: #FFE6CC;
-  --color-primary-500: #FF6600;
-  --color-primary-600: #EC6C00;
-  --color-primary-700: #D85F00;
-  
-  /* Colors - Grays */
-  --color-gray-50: #F8F9FA;
-  --color-gray-100: #E9ECEF;
-  --color-gray-200: #DEE2E6;
-  --color-gray-300: #CED4DA;
-  --color-gray-400: #ADB5BD;
-  --color-gray-500: #6C757D;
-  --color-gray-600: #495057;
-  --color-gray-700: #343A40;
-  --color-gray-800: #212529;
-  
-  /* Colors - Semantic */
-  --color-success: #28A745;
-  --color-warning: #FFC107;
-  --color-error: #DC3545;
-  --color-info: #17A2B8;
-  
-  /* Spacing */
-  --spacing-1: 4px;
-  --spacing-2: 8px;
-  --spacing-3: 12px;
-  --spacing-4: 16px;
-  --spacing-5: 20px;
-  --spacing-6: 24px;
-  --spacing-8: 32px;
-  --spacing-10: 40px;
-  --spacing-12: 48px;
-  --spacing-16: 64px;
-  
-  /* Border Radius */
-  --radius-sm: 4px;
-  --radius-base: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-base: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #FF6600 0%, #EC6C00 100%);
-  --gradient-primary-hover: linear-gradient(135deg, #EC6C00 0%, #D85F00 100%);
-}
+/* Design tokens agora estão centralizados em design-tokens.css */
 
 @layer base {
   * {
@@ -124,28 +72,28 @@
   }
   
   .btn-tertiary {
-    background: var(--color-gray-100);
-    color: var(--color-gray-700);
-    border: 1px solid var(--color-gray-200);
-    font-weight: 500;
+    background: var(--color-neutral-100);
+    color: var(--color-neutral-700);
+    border: 1px solid var(--color-neutral-200);
+    font-weight: var(--font-weight-medium);
     padding: var(--spacing-3) var(--spacing-4);
     border-radius: var(--radius-base);
-    transition: all 0.2s ease-in-out;
+    transition: var(--transition-base);
   }
   
   .btn-tertiary:hover {
-    background: var(--color-gray-200);
+    background: var(--color-neutral-200);
     transform: translateY(-1px);
   }
   
   /* Cards - Estilo Itaú */
   .card {
     background: white;
-    border: 1px solid var(--color-gray-100);
+    border: 1px solid var(--color-neutral-100);
     border-radius: var(--radius-md);
     padding: var(--spacing-6);
     box-shadow: var(--shadow-base);
-    transition: all 0.2s ease-in-out;
+    transition: var(--transition-base);
   }
   
   .card:hover {
@@ -157,7 +105,7 @@
     background: white;
     border-radius: var(--radius-lg);
     padding: var(--spacing-6);
-    border: 1px solid var(--color-gray-100);
+    border: 1px solid var(--color-neutral-100);
     position: relative;
     overflow: hidden;
   }
@@ -176,10 +124,10 @@
   .input {
     width: 100%;
     padding: var(--spacing-3) var(--spacing-4);
-    border: 2px solid var(--color-gray-200);
+    border: 2px solid var(--color-neutral-200);
     border-radius: var(--radius-base);
-    font-size: 16px;
-    transition: all 0.2s ease-in-out;
+    font-size: var(--font-size-base);
+    transition: var(--transition-base);
     background: white;
   }
   
@@ -206,12 +154,12 @@
   }
   
   .icon-container.blue {
-    background: linear-gradient(135deg, var(--color-info) 0%, #138496 100%);
+    background: var(--gradient-info);
     color: white;
   }
   
   .icon-container.green {
-    background: linear-gradient(135deg, var(--color-success) 0%, #1e7e34 100%);
+    background: var(--gradient-success);
     color: white;
   }
   
