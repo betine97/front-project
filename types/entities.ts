@@ -28,7 +28,7 @@ export interface Fornecedor {
 }
 
 export interface PedidoCompra {
-  id: number;
+  id_pedido: number;
   id_fornecedor: number;
   data_pedido: string;
   data_entrega: string;
@@ -36,6 +36,7 @@ export interface PedidoCompra {
   custo_pedido: number;
   valor_total: number;
   descricao_pedido: string;
+  status: string;
   // Campos calculados/relacionados
   fornecedor?: Fornecedor;
   itens?: ItemPedido[];

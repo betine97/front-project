@@ -105,90 +105,76 @@ export default function FornecedoresPage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-4" style={{ padding: '4rem' }}>
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center shadow-md">
-              <Truck className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-semibold text-gray-900">Fornecedores</h1>
-              <p className="text-sm text-gray-600">Gerencie seus fornecedores</p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={handleCreateFornecedor}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium px-3 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl text-sm"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Novo Fornecedor</span>
-            </button>
-          </div>
+      <div className="space-y-3" style={{ paddingLeft: '4rem', paddingTop: '4rem', paddingBottom: '4rem', paddingRight: '6rem' }}>
+        {/* Header Simplificado */}
+        <div>
+          <p className="text-sm text-gray-600 font-medium">Gerencie seus fornecedores</p>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg p-4 border border-gray-100 hover:border-gray-200 transition-all duration-200">
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
-                <Truck className="w-4 h-4 text-blue-500" />
+        {/* Stats Cards - Estilo ClickUp/Itaú */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="card-metric-modern min-h-[80px]">
+            <div className="flex items-center space-x-3">
+              <div className="icon-container-metric orange">
+                <Truck className="w-5 h-5" />
               </div>
-              <div className="text-xs text-green-600 font-medium">+5.2%</div>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 mb-1">Total de Fornecedores</p>
-              <p className="text-xl font-bold text-gray-900">{allFornecedores.length}</p>
+              <div>
+                <p className="text-lg font-bold text-gray-900">{allFornecedores.length} fornecedores total</p>
+              </div>
             </div>
           </div>
           
-          <div className="bg-white rounded-lg p-4 border border-gray-100 hover:border-gray-200 transition-all duration-200">
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
-                <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="card-metric-modern min-h-[80px]">
+            <div className="flex items-center space-x-3">
+              <div className="icon-container-metric gray">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <div className="text-xs text-green-600 font-medium">+2.1%</div>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 mb-1">Fornecedores Ativos</p>
-              <p className="text-xl font-bold text-gray-900">{allFornecedores.filter(f => f.status === 'ativo').length}</p>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg p-4 border border-gray-100 hover:border-gray-200 transition-all duration-200">
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
-                <MapPin className="w-4 h-4 text-blue-500" />
+              <div>
+                <p className="text-lg font-bold text-gray-900">{allFornecedores.filter(f => f.status === 'ativo').length} ativos</p>
               </div>
-              <div className="text-xs text-blue-600 font-medium">Estável</div>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 mb-1">Estados</p>
-              <p className="text-xl font-bold text-gray-900">
-                {Array.from(new Set(allFornecedores.map(f => f.estado))).length}
-              </p>
             </div>
           </div>
           
-          <div className="bg-white rounded-lg p-4 border border-gray-100 hover:border-gray-200 transition-all duration-200">
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
-                <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="card-metric-modern min-h-[80px]">
+            <div className="flex items-center space-x-3">
+              <div className="icon-container-metric gray">
+                <MapPin className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-gray-900">
+                  {Array.from(new Set(allFornecedores.map(f => f.estado))).length} estados
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="card-metric-modern min-h-[80px]">
+            <div className="flex items-center space-x-3">
+              <div className="icon-container-metric gray">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
-              <div className="text-xs text-green-600 font-medium">+1.8%</div>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 mb-1">Cidades</p>
-              <p className="text-xl font-bold text-gray-900">
-                {Array.from(new Set(allFornecedores.map(f => f.cidade))).length}
-              </p>
+              <div>
+                <p className="text-lg font-bold text-gray-900">
+                  {Array.from(new Set(allFornecedores.map(f => f.cidade))).length} cidades
+                </p>
+              </div>
             </div>
           </div>
+        </div>
+
+        {/* Action Buttons */}
+        <div className="flex items-center justify-end space-x-3 mb-4">
+          <button
+            onClick={handleCreateFornecedor}
+            className="btn-primary flex items-center space-x-2 text-sm px-4 py-2"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Novo Fornecedor</span>
+          </button>
         </div>
 
         {/* Filters and Search */}
@@ -204,7 +190,7 @@ export default function FornecedoresPage() {
               <input
                 type="text"
                 placeholder="Buscar fornecedores..."
-                className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-gray-50 focus:bg-white text-sm"
+                className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200 bg-gray-50 focus:bg-white text-sm"
                 onChange={(e) => setSearchTerm(e.target.value)}
                 value={searchTerm}
               />
@@ -212,7 +198,7 @@ export default function FornecedoresPage() {
 
             {/* Status Filter */}
             <select
-              className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-gray-50 focus:bg-white transition-colors duration-200 text-sm"
+              className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-50 focus:bg-white transition-colors duration-200 text-sm"
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
             >

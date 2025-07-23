@@ -12,9 +12,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) =>
   return (
     <div className="flex h-screen bg-neutral-50">
       <Sidebar />
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-visible">
         <Header />
-        <main className="flex-1 overflow-y-auto" style={{ backgroundColor: 'white' }}>
+        <main className="flex-1 overflow-y-auto overflow-x-visible" style={{ backgroundColor: 'white' }}>
           {children}
         </main>
       </div>

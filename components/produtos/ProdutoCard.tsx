@@ -1,119 +1,115 @@
 'use client';
 
-import { Eye, Edit, Trash2, AlertTriangle } from 'lucide-react';
+import React from 'react';
 import { Produto } from '@/types/entities';
 import { formatCurrency } from '@/lib/utils';
-import styles from '@/app/produtos/produtos.module.css';
+import { Eye, BarChart3, Edit, Package } from 'lucide-react';
 
 interface ProdutoCardProps {
   produto: Produto;
-  onView: (produto: Produto) => void;
   onEdit: (produto: Produto) => void;
-  onDelete: (id: string) => void;
+  onDelete: (id: number) => void;
 }
 
-export function ProdutoCard({ produto, onView, onEdit, onDelete }: ProdutoCardProps) {
-  const getStatusColor = (ativo: boolean, estoque: number) => {
-    if (estoque === 0) return styles.statusOutOfStock;
-    if (!ativo) return styles.statusInactive;
-    return styles.statusActive;
-  };
-
-  const getStatusText = (ativo: boolean, estoque: number) => {
-    if (estoque === 0) return 'Sem Estoque';
-    if (!ativo) return 'Inativo';
-    return 'Ativo';
-  };
-
-  const isLowStock = produto.estoque <= produto.estoqueMinimo;
+export function ProdutoCard({ produto, onEdit, onDelete }: ProdutoCardProps) {
+  // Calculando margem exemplo (assumindo 30% de margem)
+  const margemPercentual = 30;
+  const precoCMV = produto.preco_venda * (1 - margemPercentual / 100);
 
   return (
-    <div className={`${styles.productCard} group relative`}>
-      <div className={styles.flipCard}>
-        <div className={styles.flipCardInner}>
-          {/* Front */}
-          <div className={styles.flipCardFront}>
-            <div className="flex items-start justify-between mb-3">
-              <span className={`${styles.statusBadge} ${getStatusColor(produto.ativo, produto.estoque)}`}>
-                {getStatusText(produto.ativo, produto.estoque)}
-              </span>
-              {isLowStock && (
-                <AlertTriangle className={`w-4 h-4 text-red-500 ${styles.lowStockIndicator}`} />
-              )}
-            </div>
+    <div className="bg-white rounded-lg border border-gray-200 p-3 hover:shadow-md transition-shadow duration-200">
+      {/* Header com ícone laranja e nome do produto */}
+      <div className="flex items-start gap-2 mb-3">
+        <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center flex-shrink-0">
+          <Package className="w-4 h-4 text-white" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="font-semibold text-gray-900 text-sm leading-tight mb-1">
+            {produto.nome_produto}
+          </h3>
+          <p className="text-xs text-gray-400 font-mono uppercase tracking-wider">
+            {produto.sku}
+          </p>
+        </div>
+      </div>
 
-            <div className="flex-1">
-              <h3 className="font-semibold text-neutral-900 text-sm mb-1 line-clamp-2">
-                {produto.nome}
-              </h3>
-              <p className="text-xs text-neutral-500 mb-2">{produto.categoria}</p>
-              <p className="text-xs text-neutral-400 mb-3">ID: {produto.id}</p>
-            </div>
+      {/* Seção Categoria e Marca - Backgrounds individuais */}
+      <div className="grid grid-cols-2 gap-2 mb-3">
+        <div className="bg-gray-50 rounded-lg p-2">
+          <p className="text-xs text-gray-400 mb-1">Categoria</p>
+          <p className="text-sm font-semibold text-gray-900">{produto.categoria}</p>
+        </div>
+        <div className="bg-gray-50 rounded-lg p-2">
+          <p className="text-xs text-gray-400 mb-1">Marca</p>
+          <p className="text-sm font-semibold text-gray-900">{produto.marca}</p>
+        </div>
+      </div>
 
-            <div className="space-y-2">
-              <div className="flex justify-between items-center">
-                <span className="text-lg font-bold text-primary">
-                  {formatCurrency(produto.preco_venda)}
-                </span>
-                <span className="text-xs text-neutral-500">
-                  Estoque: {produto.estoque}
-                </span>
-              </div>
-            </div>
-          </div>
+      {/* Seção Para e Tipo - Backgrounds individuais */}
+      <div className="grid grid-cols-2 gap-2 mb-3">
+        <div className="bg-gray-50 rounded-lg p-2">
+          <p className="text-xs text-gray-400 mb-1">Para</p>
+          <p className="text-sm font-semibold text-gray-900">{produto.destinado_para}</p>
+        </div>
+        <div className="bg-gray-50 rounded-lg p-2">
+          <p className="text-xs text-gray-400 mb-1">Tipo</p>
+          <p className="text-sm font-semibold text-gray-900">{produto.variacao}</p>
+        </div>
+      </div>
 
-          {/* Back */}
-          <div className={styles.flipCardBack}>
-            <div className="flex-1 space-y-3">
-              <div>
-                <p className="text-xs font-medium text-neutral-700 mb-1">Categoria:</p>
-                <p className="text-xs text-neutral-600">{produto.categoria}</p>
-              </div>
+      {/* Seção de Preços - Backgrounds individuais com alinhamento correto */}
+      <div className="grid grid-cols-3 gap-2 mb-3">
+        <div className="bg-gray-50 rounded-lg p-2">
+          <p className="text-xs text-gray-400 mb-1 text-center">CMV</p>
+          <p className="text-sm font-bold text-gray-900 text-center">{formatCurrency(precoCMV)}</p>
+        </div>
+        <div className="bg-gray-50 rounded-lg p-2">
+          <p className="text-xs text-gray-400 mb-1 text-center">Margem</p>
+          <p className="text-sm font-bold text-gray-900 text-center">{margemPercentual}%</p>
+        </div>
+        <div className="bg-gray-50 rounded-lg p-2">
+          <p className="text-xs text-gray-400 mb-1 text-center">Venda</p>
+          <p className="text-sm font-bold text-gray-900 text-center">{formatCurrency(produto.preco_venda)}</p>
+        </div>
+      </div>
 
-              <div>
-                <p className="text-xs font-medium text-neutral-700 mb-1">Marca:</p>
-                <p className="text-xs text-neutral-600">{produto.marca}</p>
-              </div>
-
-              {produto.subcategoria && (
-                <div>
-                  <p className="text-xs font-medium text-neutral-700 mb-1">Subcategoria:</p>
-                  <p className="text-xs text-neutral-600">{produto.subcategoria}</p>
-                </div>
-              )}
-
-              {produto.descricao && (
-                <div>
-                  <p className="text-xs font-medium text-neutral-700 mb-1">Descrição:</p>
-                  <p className="text-xs text-neutral-600 line-clamp-3">{produto.descricao}</p>
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center justify-between pt-3 border-t border-neutral-200">
-              <button
-                onClick={() => onView(produto)}
-                className={`${styles.actionButton} ${styles.actionButtonView}`}
-                title="Ver detalhes"
-              >
-                <Eye className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => onEdit(produto)}
-                className={`${styles.actionButton} ${styles.actionButtonEdit}`}
-                title="Editar"
-              >
-                <Edit className="w-4 h-4" />
-              </button>
-              <button
-                onClick={() => onDelete(produto.id)}
-                className={`${styles.actionButton} ${styles.actionButtonDelete}`}
-                title="Excluir"
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
+      {/* Botões de Ação - Backgrounds individuais */}
+      <div className="grid grid-cols-3 gap-2 pt-3 border-t border-gray-100">
+        <div className="bg-gray-50 rounded-lg">
+          <button
+            onClick={() => {
+              // Funcionalidade de ver detalhes
+            }}
+            className="w-full flex flex-col items-center gap-1 py-2 text-gray-400 hover:text-gray-600 transition-colors"
+            title="Ver detalhes"
+          >
+            <Eye className="w-4 h-4" />
+            <span className="text-xs">Ver</span>
+          </button>
+        </div>
+        
+        <div className="bg-gray-50 rounded-lg">
+          <button
+            onClick={() => {
+              // Funcionalidade de ver preços/histórico
+            }}
+            className="w-full flex flex-col items-center gap-1 py-2 text-gray-400 hover:text-gray-600 transition-colors"
+            title="Ver preços"
+          >
+            <BarChart3 className="w-4 h-4" />
+            <span className="text-xs">Preços</span>
+          </button>
+        </div>
+        
+        <div className="bg-gray-50 rounded-lg">
+          <button
+            onClick={() => onEdit(produto)}
+            className="w-full flex flex-col items-center gap-1 py-2 text-gray-400 hover:text-orange-500 transition-colors"
+            title="Editar produto"
+          >
+            <Edit className="w-4 h-4" />
+            <span className="text-xs">Editar</span>
+          </button>
         </div>
       </div>
     </div>

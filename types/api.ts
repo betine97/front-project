@@ -11,6 +11,7 @@ export interface PaginatedResponse<T> {
   page: number;
   limit: number;
   totalPages: number;
+  allData?: T[];
 }
 
 // Tipos de erro da API

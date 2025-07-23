@@ -6,14 +6,12 @@ import { MarcasPorCategoriaModal } from './MarcasPorCategoriaModal'
 
 export const MarcasPorCategoria: React.FC = () => {
   const { data: categoriasData, isLoading, error } = useCategoriasMarcas()
-  const [currentPage, setCurrentPage] = useState(0)
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const itemsPerPage = 3
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full">
-        <div className="text-sm text-gray-500">Carregando dados...</div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
       </div>
     )
   }
@@ -21,13 +19,14 @@ export const MarcasPorCategoria: React.FC = () => {
   if (error) {
     console.error('Erro ao carregar categorias e marcas:', error)
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-sm text-red-500">
-          Erro ao carregar dados
-          <br />
-          <span className="text-xs text-gray-400">
-            {error instanceof Error ? error.message : 'Erro desconhecido'}
-          </span>
+      <div className="flex items-center justify-center h-full text-xs text-red-500">
+        <div className="text-center">
+          <div style={{ width: '24px', height: '24px', backgroundColor: '#FEE2E2', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px' }}>
+            <svg className="w-3 h-3 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <p>Erro ao carregar dados</p>
         </div>
       </div>
     )
@@ -35,153 +34,138 @@ export const MarcasPorCategoria: React.FC = () => {
 
   if (!categoriasData || categoriasData.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full">
-        <div className="text-sm text-gray-500">Nenhum dado encontrado</div>
+      <div className="flex items-center justify-center h-full text-xs text-gray-500">
+        <div className="text-center">
+          <div style={{ width: '24px', height: '24px', backgroundColor: '#F3F4F6', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 8px' }}>
+            <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+          </div>
+          <p>Nenhum dado disponível</p>
+        </div>
       </div>
     )
   }
 
-  // Ordenar categorias por quantidade de marcas (decrescente)
+  // Ordenar categorias por quantidade de marcas (decrescente) e pegar top 10
   const sortedCategorias = categoriasData
     .sort((a, b) => b.QuantidadeMarcas - a.QuantidadeMarcas)
     .slice(0, 10)
 
-  const totalMarcas = categoriasData.reduce((sum, categoria) => sum + categoria.QuantidadeMarcas, 0)
-  const maxValue = Math.max(...categoriasData.map(categoria => categoria.QuantidadeMarcas))
+  const maxValue = Math.max(...sortedCategorias.map(categoria => categoria.QuantidadeMarcas))
   
-  // Calcular paginação
-  const totalPages = Math.ceil(sortedCategorias.length / itemsPerPage)
-  const startIndex = currentPage * itemsPerPage
-  const currentItems = sortedCategorias.slice(startIndex, startIndex + itemsPerPage)
+  // Mostrar os primeiros 4 itens (o 4º com efeito fade)
+  const currentItems = sortedCategorias.slice(0, 4)
+  const remainingItems = sortedCategorias.length - 4
 
   return (
     <>
-      {/* Botão invisível para ser acionado externamente */}
+      {/* Botão invisível para ser acionado externalmente */}
       <button
         data-expand-marcas-categoria
         onClick={() => setIsModalOpen(true)}
         className="hidden"
       />
       
-      <div className="space-y-4">
-        {/* Lista de categorias da página atual */}
-        <div className="space-y-2 pt-4" style={{ minHeight: '160px' }}>
-          {currentItems.map((categoriaData, pageIndex) => {
-            const originalIndex = startIndex + pageIndex
-            const { Categoria: categoria, Marcas: marcas, QuantidadeMarcas: quantidade } = categoriaData
-            const percentage = (quantidade / totalMarcas) * 100
+      <div className="h-full p-3 flex flex-col">
+        {/* Título */}
+        <div className="mb-3">
+          <h4 className="text-xs font-semibold text-gray-700">Marcas por Categoria</h4>
+          <p className="text-xs text-gray-500">Relação categoria/marca</p>
+        </div>
+
+        {/* Lista de categorias com barras horizontais */}
+        <div className="space-y-2 pt-4" style={{ minHeight: '140px' }}>
+          {currentItems.map((categoriaData, index) => {
+            const { Categoria: categoria, QuantidadeMarcas: quantidade, Marcas: marcas } = categoriaData
             
             return (
-              <div key={categoria} className="py-1">
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center space-x-2 flex-1">
-                    <div className={`w-5 h-5 rounded-lg flex items-center justify-center text-xs font-bold text-white ${
-                      originalIndex === 0 ? 'bg-orange-500' : 
-                      originalIndex === 1 ? 'bg-orange-400' : 
-                      originalIndex === 2 ? 'bg-orange-300' : 
-                      originalIndex === 3 ? 'bg-orange-200 text-orange-800' : 'bg-gray-400'
-                    }`}>
-                      {originalIndex + 1}
+              <div 
+                key={categoria} 
+                className="flex items-center py-1"
+                style={{ 
+                  opacity: index === 3 ? 0.3 : 1,
+                  transform: index === 3 ? 'translateY(20%)' : 'translateY(0)',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                <div className="flex items-center space-x-2">
+                  <div className={`w-5 h-5 rounded-lg flex items-center justify-center text-xs font-bold text-white ${
+                    index === 0 ? 'bg-orange-500' : 
+                    index === 1 ? 'bg-orange-400' : 
+                    index === 2 ? 'bg-orange-300' : 
+                    index === 3 ? 'bg-orange-200 text-orange-800' : 'bg-gray-400'
+                  }`}>
+                    {index + 1}
+                  </div>
+                  <div className="min-w-[80px]">
+                    <div className="text-sm font-medium text-gray-900">
+                      {categoria.length > 12 ? categoria.substring(0, 12) + '...' : categoria}
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-medium text-gray-900 truncate">{categoria}</div>
-                    </div>
-                    
-                    <div className="flex items-center space-x-2">
-                      <div className="w-16 h-1 bg-gray-100 rounded-full">
-                        <div
-                          className={`h-1 rounded-full transition-all duration-500 ${
-                            originalIndex < 4 ? 'bg-orange-500' : 'bg-gray-300'
-                          }`}
-                          style={{ 
-                            width: `${(quantidade / maxValue) * 100}%`,
-                            minWidth: '2px'
-                          }}
-                        />
-                      </div>
-                      
-                      <div className="text-right min-w-[40px]">
-                        <div className="text-sm font-bold text-gray-900">{quantidade}</div>
-                      </div>
+                    <div className="text-xs text-gray-500">
+                      {marcas.slice(0, 2).join(', ')}{marcas.length > 2 ? '...' : ''}
                     </div>
                   </div>
                 </div>
                 
-                {/* Lista compacta de marcas da categoria */}
-                <div className="ml-7 flex flex-wrap gap-1">
-                  {marcas.slice(0, 6).map((marca, index) => (
-                    <span
-                      key={marca}
-                      className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700"
-                    >
-                      {marca}
-                    </span>
-                  ))}
-                  {marcas.length > 6 && (
-                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-700">
-                      +{marcas.length - 6}
-                    </span>
-                  )}
+                <div className="flex-1 mx-3">
+                  <div className="w-full bg-gray-100 rounded-full h-2">
+                    <div
+                      className={`h-2 rounded-full transition-all duration-500 ${
+                        index < 4 ? 'bg-orange-500' : 'bg-gray-300'
+                      }`}
+                      style={{ 
+                        width: `${(quantidade / maxValue) * 100}%`,
+                        minWidth: '4px'
+                      }}
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <div className="text-sm font-bold text-gray-900">{quantidade}</div>
+                  <div className="text-xs font-medium text-orange-600 min-w-[40px]">
+                    marca{quantidade !== 1 ? 's' : ''}
+                  </div>
                 </div>
               </div>
             )
           })}
+          
+          {/* Texto indicativo de itens restantes */}
+          {remainingItems > 0 && (
+            <div 
+              className="flex items-center justify-center py-2"
+              style={{ 
+                opacity: 0.4,
+                transition: 'opacity 0.3s ease'
+              }}
+            >
+              <div className="text-xs font-medium text-gray-500">
+                mais {remainingItems} {remainingItems === 1 ? 'item' : 'itens'}
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Controles de paginação */}
-        {totalPages > 1 && (
-          <div className="flex items-center justify-center space-x-2 pt-2">
-            {/* Seta para esquerda */}
-            <button
-              onClick={() => setCurrentPage(Math.max(0, currentPage - 1))}
-              disabled={currentPage === 0}
-              className={`p-1 rounded-full transition-colors ${
-                currentPage === 0 
-                  ? 'text-gray-300 cursor-not-allowed' 
-                  : 'text-gray-500 hover:text-orange-500 hover:bg-orange-50'
-              }`}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
-            </button>
-
-            {/* Bolinhas de paginação */}
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentPage(index)}
-                className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                  index === currentPage 
-                    ? 'bg-orange-500 scale-125' 
-                    : 'bg-gray-300 hover:bg-orange-300'
-                }`}
-              />
-            ))}
-
-            {/* Seta para direita */}
-            <button
-              onClick={() => setCurrentPage(Math.min(totalPages - 1, currentPage + 1))}
-              disabled={currentPage === totalPages - 1}
-              className={`p-1 rounded-full transition-colors ${
-                currentPage === totalPages - 1 
-                  ? 'text-gray-300 cursor-not-allowed' 
-                  : 'text-gray-500 hover:text-orange-500 hover:bg-orange-50'
-              }`}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-            </button>
+        {/* Resumo */}
+        <div className="mt-3 pt-2 border-t border-gray-100">
+          <div className="flex justify-between items-center text-xs text-gray-500">
+            <span>Top {currentItems.length} categorias</span>
+            <span>
+              {sortedCategorias.reduce((total, cat) => total + cat.QuantidadeMarcas, 0)} total marcas
+            </span>
           </div>
-        )}
+        </div>
       </div>
 
-      {/* Modal para visualização completa */}
-      <MarcasPorCategoriaModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
+      {/* Modal */}
+      {isModalOpen && (
+        <MarcasPorCategoriaModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
+      )}
     </>
   )
 }

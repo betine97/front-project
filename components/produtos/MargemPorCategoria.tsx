@@ -1,23 +1,22 @@
-'use client'
+'use client';
 
-import React, { useState } from 'react'
-import { useCategoriasQuantidade } from '@/hooks/useCategoriasQuantidade'
-import { DistribuicaoCategoriasModal } from './DistribuicaoCategoriasModal'
+import React from 'react';
+import { useCategoriasMargem } from '../../hooks/useCategoriasMargem';
 
-export const DistribuicaoCategoriasProdutos: React.FC = () => {
-  const { data: categoriasData, isLoading, error } = useCategoriasQuantidade()
-  const [isModalOpen, setIsModalOpen] = useState(false)
+export function MargemPorCategoria() {
+  const { data, loading, error } = useCategoriasMargem();
+  
+  console.log('MargemPorCategoria - loading:', loading, 'error:', error, 'data:', data);
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-sm text-gray-500">Carregando dados...</div>
       </div>
-    )
+    );
   }
 
   if (error) {
-    console.error('Erro ao carregar categorias:', error)
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-sm text-red-500">
@@ -28,44 +27,31 @@ export const DistribuicaoCategoriasProdutos: React.FC = () => {
           </span>
         </div>
       </div>
-    )
+    );
   }
 
-  if (!categoriasData || categoriasData.length === 0) {
+  if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-full">
         <div className="text-sm text-gray-500">Nenhum dado encontrado</div>
       </div>
-    )
+    );
   }
 
-  // Ordenar categorias por quantidade (decrescente) e pegar top 10
-  const sortedCategorias = categoriasData
-    .sort((a, b) => b.Quantidade - a.Quantidade)
-    .slice(0, 10)
-
-  const totalProdutos = categoriasData.reduce((sum, categoria) => sum + categoria.Quantidade, 0)
-  const maxValue = Math.max(...categoriasData.map(categoria => categoria.Quantidade))
+  // Ordenar por margem decrescente
+  const sortedData = [...data].sort((a, b) => b.margem - a.margem);
+  const maxValue = Math.max(...sortedData.map(item => item.margem));
   
   // Mostrar os primeiros 4 itens (o 4º com efeito fade)
-  const currentItems = sortedCategorias.slice(0, 4)
-  const remainingItems = sortedCategorias.length - 4
+  const currentItems = sortedData.slice(0, 4);
+  const remainingItems = sortedData.length - 4;
 
   return (
-    <>
-      {/* Botão invisível para ser acionado externamente */}
-      <button
-        data-expand-categorias
-        onClick={() => setIsModalOpen(true)}
-        className="hidden"
-      />
-      
-      <div className="space-y-4">
-        {/* Lista de categorias da página atual */}
-        <div className="space-y-2 pt-4" style={{ minHeight: '140px' }}>
+    <div className="space-y-4">
+      {/* Lista de categorias */}
+      <div className="space-y-2 pt-4" style={{ minHeight: '140px' }}>
         {currentItems.map((categoriaData, index) => {
-          const { Categoria: categoria, Quantidade: quantidade } = categoriaData
-          const percentage = (quantidade / totalProdutos) * 100
+          const { categoria, margem } = categoriaData;
           
           return (
             <div 
@@ -98,7 +84,7 @@ export const DistribuicaoCategoriasProdutos: React.FC = () => {
                       index < 4 ? 'bg-orange-500' : 'bg-gray-300'
                     }`}
                     style={{ 
-                      width: `${(quantidade / maxValue) * 100}%`,
+                      width: `${(margem / maxValue) * 100}%`,
                       minWidth: '4px'
                     }}
                   />
@@ -106,8 +92,7 @@ export const DistribuicaoCategoriasProdutos: React.FC = () => {
               </div>
               
               <div className="flex items-center space-x-2">
-                <div className="text-sm font-bold text-gray-900">{quantidade}</div>
-                <div className="text-xs font-medium text-orange-600 min-w-[30px]">{percentage.toFixed(0)}%</div>
+                <div className="text-sm font-bold text-gray-900">{margem.toFixed(1)}%</div>
               </div>
             </div>
           )
@@ -128,15 +113,6 @@ export const DistribuicaoCategoriasProdutos: React.FC = () => {
           </div>
         )}
       </div>
-
-
     </div>
-
-    {/* Modal para visualização completa */}
-    <DistribuicaoCategoriasModal 
-      isOpen={isModalOpen}
-      onClose={() => setIsModalOpen(false)}
-    />
-  </>
-  )
+  );
 }

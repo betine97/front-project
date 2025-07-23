@@ -1,254 +1,232 @@
-// Componente de lista de produtos usando a nova arquitetura
 'use client';
 
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useProdutos } from '@/hooks/useProdutos';
 import { DataTable } from '@/components/shared/DataTable';
 import { Pagination } from '@/components/shared/Pagination';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
-import { TableColumn, SortState } from '@/types/common';
+import { TableColumn } from '@/types/common';
 import { Produto } from '@/types/entities';
-import { formatCurrency, formatDate, debounce } from '@/lib/utils';
-import { PAGINATION, MESSAGES } from '@/constants';
-import { Plus, Edit, Trash2, Search, Package } from 'lucide-react';
+import { formatCurrency, debounce } from '@/lib/utils/index';
+import { PAGINATION } from '@/constants';
 
-export function ProdutosList() {
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState('');
-  const [categoria, setCategoria] = useState('');
-  const [sortState, setSortState] = useState<SortState>({ field: 'nome', direction: 'asc' });
+interface ProdutosListProps {
+  searchTerm: string;
+  onSearchChange: (value: string) => void;
+  selectedCategory: string;
+  onCategoryChange: (value: string) => void;
+  viewMode: 'grid' | 'list';
+  onViewModeChange: (mode: 'grid' | 'list') => void;
+  onEdit?: (produto: Produto) => void;
+  onDelete?: (id: number) => void;
+}
+
+export function ProdutosList({
+  searchTerm,
+  onSearchChange,
+  selectedCategory,
+  onCategoryChange,
+  viewMode,
+  onViewModeChange,
+  onEdit,
+  onDelete,
+}: ProdutosListProps) {
+  const { produtos, loading, error, refetch } = useProdutos();
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedProduto, setSelectedProduto] = useState<Produto | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
-  const { 
-    produtos, 
-    loading, 
-    error, 
-    total, 
-    totalPages, 
-    deleteProduto,
-    refetch 
-  } = useProdutos({
-    page,
-    limit: PAGINATION.DEFAULT_LIMIT,
-    search: search || undefined,
-    categoria: categoria || undefined,
-  });
+  // Função debounced para busca
+  const debouncedSearch = React.useMemo(
+    () => debounce((value: string) => {
+      onSearchChange(value);
+      setCurrentPage(1);
+    }, 300),
+    [onSearchChange]
+  );
 
-  const debouncedSearch = debounce((value: string) => {
-    setSearch(value);
-    setPage(1);
-  }, 300);
+  // Reset da página quando filtros mudam
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategory, searchTerm]);
 
-  const handleSort = (field: string) => {
-    setSortState(prev => ({
-      field,
-      direction: prev.field === field && prev.direction === 'asc' ? 'desc' : 'asc'
-    }));
-  };
+  // Filtrar produtos
+  const filteredProdutos = React.useMemo(() => {
+    return produtos.filter(produto => {
+      const matchesSearch = produto.nome_produto.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           produto.sku.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = !selectedCategory || produto.categoria === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [produtos, searchTerm, selectedCategory]);
 
-  const handleDelete = async () => {
-    if (!selectedProduto) return;
+  // Paginação
+  const totalPages = Math.ceil(filteredProdutos.length / PAGINATION.DEFAULT_LIMIT);
+  const startIndex = (currentPage - 1) * PAGINATION.DEFAULT_LIMIT;
+  const paginatedProdutos = filteredProdutos.slice(startIndex, startIndex + PAGINATION.DEFAULT_LIMIT);
 
-    try {
-      await deleteProduto(selectedProduto.id);
-      setShowDeleteModal(false);
-      setSelectedProduto(null);
-    } catch (error) {
-      console.error('Erro ao excluir produto:', error);
-    }
-  };
-
+  // Colunas da tabela
   const columns: TableColumn<Produto>[] = [
     {
-      key: 'nome',
+      key: 'nome_produto',
       label: 'Produto',
-      sortable: true,
-      render: (value, produto) => (
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-            <Package size={16} className="text-gray-500" />
-          </div>
-          <div>
-            <div className="font-medium text-gray-900">{value}</div>
-            <div className="text-sm text-gray-500">{produto.categoria}</div>
-          </div>
+      render: (produto) => (
+        <div>
+          <p className="font-medium text-gray-900">{produto.nome_produto}</p>
+          <p className="text-sm text-gray-500">{produto.sku}</p>
         </div>
       ),
+    },
+    {
+      key: 'categoria',
+      label: 'Categoria',
     },
     {
       key: 'marca',
       label: 'Marca',
-      sortable: true,
     },
     {
-      key: 'preco',
+      key: 'preco_venda',
       label: 'Preço',
-      sortable: true,
-      render: (value) => formatCurrency(value),
+      render: (produto) => formatCurrency(produto.preco_venda),
     },
     {
-      key: 'estoque',
-      label: 'Estoque',
-      sortable: true,
-      render: (value, produto) => (
-        <div className="flex items-center space-x-2">
-          <span className={`font-medium ${
-            value <= produto.estoqueMinimo ? 'text-red-600' : 'text-gray-900'
-          }`}>
-            {value}
-          </span>
-          {value <= produto.estoqueMinimo && (
-            <span className="px-2 py-1 bg-red-100 text-red-800 text-xs rounded-full">
-              Baixo
-            </span>
-          )}
-        </div>
-      ),
-    },
-    {
-      key: 'ativo',
+      key: 'status',
       label: 'Status',
-      render: (value) => (
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+      render: (produto) => (
+        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
+          produto.status === 'ativo'
+            ? 'bg-green-100 text-green-800'
+            : 'bg-red-100 text-red-800'
         }`}>
-          {value ? 'Ativo' : 'Inativo'}
+          {produto.status === 'ativo' ? 'Ativo' : 'Inativo'}
         </span>
       ),
     },
     {
       key: 'id',
       label: 'Ações',
-      render: (_, produto) => (
-        <div className="flex space-x-2">
+      render: (produto) => (
+        <div className="flex gap-2">
           <Button
-            variant="ghost"
             size="sm"
-            onClick={() => {
-              setSelectedProduto(produto);
-              setShowModal(true);
-            }}
+            variant="outline"
+            onClick={() => handleEdit(produto)}
           >
-            <Edit size={16} />
+            Editar
           </Button>
           <Button
-            variant="ghost"
             size="sm"
-            onClick={() => {
-              setSelectedProduto(produto);
-              setShowDeleteModal(true);
-            }}
+            variant="outline"
+            onClick={() => handleDelete(produto)}
+            className="text-red-600 hover:text-red-700"
           >
-            <Trash2 size={16} />
+            Excluir
           </Button>
         </div>
       ),
     },
   ];
 
+  const handleEdit = (produto: Produto) => {
+    setSelectedProduto(produto);
+    setShowModal(true);
+    onEdit?.(produto);
+  };
+
+  const handleDelete = (produto: Produto) => {
+    if (confirm(`Tem certeza que deseja excluir o produto ${produto.nome_produto}?`)) {
+      onDelete?.(produto.id);
+    }
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  if (loading === 'loading') {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-orange-500"></div>
+      </div>
+    );
+  }
+
   if (error) {
     return (
-      <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
-        <p className="text-red-800">{error}</p>
-        <Button onClick={refetch} className="mt-2">
+      <div className="text-center p-8">
+        <p className="text-red-600">Erro ao carregar produtos: {error}</p>
+        <Button onClick={() => refetch()} className="mt-4">
           Tentar novamente
         </Button>
       </div>
     );
   }
 
-  return (
-    <div className="space-y-4">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Produtos</h1>
-        <Button onClick={() => setShowModal(true)}>
-          <Plus size={16} className="mr-2" />
-          Novo Produto
-        </Button>
-      </div>
-
-      {/* Filtros */}
-      <div className="flex items-center space-x-4">
-        <div className="relative flex-1 max-w-md">
-          <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          <Input
-            placeholder="Buscar produtos..."
-            className="pl-10"
-            onChange={(e) => debouncedSearch(e.target.value)}
-          />
+  if (viewMode === 'grid') {
+    return (
+      <div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {paginatedProdutos.map(produto => (
+            <div key={produto.id} className="bg-white rounded-lg border border-gray-200 p-4 hover:shadow-md transition-shadow">
+              <h3 className="font-medium text-gray-900 mb-2">{produto.nome_produto}</h3>
+              <p className="text-sm text-gray-500 mb-2">{produto.sku}</p>
+              <p className="text-sm text-gray-600 mb-2">{produto.categoria}</p>
+              <p className="font-semibold text-lg mb-2">{formatCurrency(produto.preco_venda)}</p>
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleEdit(produto)}
+                >
+                  Editar
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleDelete(produto)}
+                  className="text-red-600 hover:text-red-700"
+                >
+                  Excluir
+                </Button>
+              </div>
+            </div>
+          ))}
         </div>
-        <select
-          className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-          value={categoria}
-          onChange={(e) => {
-            setCategoria(e.target.value);
-            setPage(1);
-          }}
-        >
-          <option value="">Todas as categorias</option>
-          <option value="racao">Ração</option>
-          <option value="brinquedos">Brinquedos</option>
-          <option value="higiene">Higiene</option>
-          <option value="acessorios">Acessórios</option>
-        </select>
+        
+        {totalPages > 1 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={handlePageChange}
+            showInfo={true}
+            total={filteredProdutos.length}
+            limit={PAGINATION.DEFAULT_LIMIT}
+          />
+        )}
       </div>
+    );
+  }
 
-      {/* Tabela */}
+  return (
+    <div>
       <DataTable
-        data={produtos}
+        data={paginatedProdutos}
         columns={columns}
-        loading={loading}
-        sortState={sortState}
-        onSort={handleSort}
-        emptyMessage="Nenhum produto encontrado"
       />
-
-      {/* Paginação */}
+      
       {totalPages > 1 && (
         <Pagination
-          currentPage={page}
+          currentPage={currentPage}
           totalPages={totalPages}
-          onPageChange={setPage}
-          total={total}
+          onPageChange={handlePageChange}
+          showInfo={true}
+          total={filteredProdutos.length}
           limit={PAGINATION.DEFAULT_LIMIT}
         />
       )}
-
-      {/* Modal de Confirmação de Exclusão */}
-      <Modal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        title="Confirmar Exclusão"
-        size="sm"
-      >
-        <div className="space-y-4">
-          <p className="text-gray-600">
-            {MESSAGES.CONFIRM.DELETE}
-          </p>
-          <p className="font-medium">
-            Produto: {selectedProduto?.nome}
-          </p>
-          <div className="flex space-x-2 justify-end">
-            <Button
-              variant="outline"
-              onClick={() => setShowDeleteModal(false)}
-            >
-              Cancelar
-            </Button>
-            <Button
-              variant="danger"
-              onClick={handleDelete}
-            >
-              Excluir
-            </Button>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
-}
+} 

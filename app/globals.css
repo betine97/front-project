@@ -219,6 +219,78 @@
     background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);
     color: white;
   }
+
+  /* Cards Modernos - Estilo ClickUp/Itaú */
+  .card-metric-modern {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #f1f5f9;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease-in-out;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-metric-modern:hover {
+    box-shadow: 0 8px 25px 0 rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+    border-color: #e2e8f0;
+  }
+
+  /* Icon Container Menor para Métricas */
+  .icon-container-metric {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .icon-container-metric.orange {
+    background: linear-gradient(135deg, #FF6600 0%, #EC6C00 100%);
+    color: white;
+  }
+
+  .icon-container-metric.green {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+  }
+
+  .icon-container-metric.blue {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+  }
+
+  .icon-container-metric.purple {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+  }
+
+  .icon-container-metric.gray {
+    background: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+  }
+
+  /* Product Cards Minimalistas */
+  .product-card-modern {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+    border: 1px solid #f1f5f9;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .product-card-modern:hover {
+    box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.08);
+    border-color: #e2e8f0;
+  }
+
+
 }/* 
 Scrollbar customization */
 .custom-scrollbar {
@@ -272,4 +344,23 @@ Scrollbar customization */
 
 .custom-scrollbar-orange::-webkit-scrollbar-thumb:active {
   background-color: #FF6B35 !important;
+}
+
+/* Scrollbar Minimalista */
+.scrollbar-minimal::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-minimal::-webkit-scrollbar-track {
+  background: #f9fafb;
+  border-radius: 3px;
+}
+
+.scrollbar-minimal::-webkit-scrollbar-thumb {
+  background: #e5e7eb;
+  border-radius: 3px;
+}
+
+.scrollbar-minimal::-webkit-scrollbar-thumb:hover {
+  background: #d1d5db;
 }

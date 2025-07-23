@@ -11,9 +11,9 @@ interface ProdutoStatsProps {
 
 export function ProdutoStats({ produtos }: ProdutoStatsProps) {
   const totalProdutos = produtos.length;
-  const produtosAtivos = produtos.filter(p => p.ativo).length;
-  const totalValue = produtos.reduce((sum, p) => sum + (p.preco_venda * p.estoque), 0);
-  const lowStockProducts = produtos.filter(p => p.estoque <= p.estoqueMinimo).length;
+  const produtosAtivos = produtos.filter(p => p.status === 'ativo').length;
+  const totalValue = produtos.reduce((sum, p) => sum + p.preco_venda, 0);
+  const totalCategorias = Array.from(new Set(produtos.map(p => p.categoria))).length;
 
   const stats = [
     {
@@ -35,10 +35,10 @@ export function ProdutoStats({ produtos }: ProdutoStatsProps) {
       color: 'text-blue-600',
     },
     {
-      title: 'Estoque Baixo',
-      value: lowStockProducts.toString(),
+      title: 'Total Categorias',
+      value: totalCategorias.toString(),
       icon: AlertTriangle,
-      color: 'text-red-600',
+      color: 'text-orange-600',
     },
   ];
 
@@ -51,7 +51,7 @@ export function ProdutoStats({ produtos }: ProdutoStatsProps) {
               <p className="text-sm text-neutral-500">{stat.title}</p>
               <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
             </div>
-            <stat.icon className={`w-8 h-8 ${stat.color}`} />
+            <stat.icon className={`w-6 h-6 ${stat.color}`} />
           </div>
         </div>
       ))}

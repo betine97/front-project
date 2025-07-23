@@ -15,10 +15,7 @@ export class PedidosCompraService {
   }): Promise<PaginatedResponse<PedidoCompra>> {
     // A API retorna um array direto, então vamos simular a paginação no frontend
     const response = await apiClient.get<any[]>(this.endpoint);
-    let pedidos = response.data.map((pedido: any) => ({
-      ...pedido,
-      id: pedido.id_pedido || pedido.id
-    }));
+    let pedidos = response.data;
 
     // Aplicar filtros
     if (params?.search) {
@@ -52,10 +49,7 @@ export class PedidosCompraService {
 
   async getById(id: number): Promise<PedidoCompra> {
     const response = await apiClient.get<any>(`${this.endpoint}/${id}`);
-    return {
-      ...response.data,
-      id: response.data.id_pedido || response.data.id
-    };
+    return response.data;
   }
 
   async getItensByPedidoId(pedidoId: number): Promise<ItemPedido[]> {
@@ -74,20 +68,14 @@ export class PedidosCompraService {
     }));
   }
 
-  async create(pedido: Omit<PedidoCompra, 'id'>): Promise<PedidoCompra> {
+  async create(pedido: Omit<PedidoCompra, 'id_pedido'>): Promise<PedidoCompra> {
     const response = await apiClient.post<any>(this.endpoint, pedido);
-    return {
-      ...response.data,
-      id: response.data.id_pedido || response.data.id
-    };
+    return response.data;
   }
 
   async update(id: number, pedido: Partial<PedidoCompra>): Promise<PedidoCompra> {
     const response = await apiClient.put<any>(`${this.endpoint}/${id}`, pedido);
-    return {
-      ...response.data,
-      id: response.data.id_pedido || response.data.id
-    };
+    return response.data;
   }
 
   async delete(id: number): Promise<void> {

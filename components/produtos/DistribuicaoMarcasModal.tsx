@@ -4,6 +4,8 @@ import React, { useEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { X } from 'lucide-react'
 import { useMarcasQuantidade } from '@/hooks/useMarcasQuantidade'
+import { useCategoriasMarcas } from '@/hooks/useCategoriasMarcas'
+import { useProdutos } from '@/hooks/useProdutos'
 
 interface DistribuicaoMarcasModalProps {
   isOpen: boolean
@@ -15,6 +17,37 @@ export const DistribuicaoMarcasModal: React.FC<DistribuicaoMarcasModalProps> = (
   onClose
 }) => {
   const { data: marcasData, isLoading, error } = useMarcasQuantidade()
+  const { data: categoriasMarcasData, isLoading: loadingCategorias, error: errorCategorias } = useCategoriasMarcas()
+  const { produtos: produtosData } = useProdutos()
+  
+  // Função para buscar categorias da marca
+  const getCategoriasDaMarca = (marca: string) => {
+    if (!categoriasMarcasData) return []
+    
+    return categoriasMarcasData
+      .filter(categoria => categoria.Marcas.includes(marca))
+      .map(categoria => categoria.Categoria)
+  }
+
+  // Função para buscar públicos-alvo da marca
+  const getPublicosAlvoDaMarca = (marca: string) => {
+    if (!produtosData || produtosData.length === 0) return []
+    
+    try {
+      const publicosUnicos = Array.from(
+        new Set(
+          produtosData
+            .filter(produto => produto.marca === marca)
+            .map(produto => produto.destinado_para)
+            .filter(Boolean)
+        )
+      )
+      
+      return publicosUnicos
+    } catch (err) {
+      return []
+    }
+  }
 
   // Controlar scroll do body quando modal está aberto
   useEffect(() => {
@@ -77,7 +110,7 @@ export const DistribuicaoMarcasModal: React.FC<DistribuicaoMarcasModalProps> = (
       }}
     >
       <div 
-        className="bg-white rounded-xl p-5 max-w-2xl w-full mx-4 max-h-[85vh] overflow-y-auto shadow-2xl"
+        className="bg-white rounded-xl p-6 w-[1000px] h-[600px] mx-4 overflow-hidden shadow-2xl flex flex-col"
         onClick={(e) => e.stopPropagation()}
       >
         {isLoading ? (
@@ -123,16 +156,22 @@ export const DistribuicaoMarcasModal: React.FC<DistribuicaoMarcasModalProps> = (
             </div>
 
             {/* Lista completa de marcas */}
-            <div className="space-y-2">
+            <div className="flex-1 overflow-y-auto space-y-2 pr-1 mx-6 scrollbar-minimal" style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#e5e7eb #f9fafb'
+            }}>
               {sortedMarcas.map((marcaData, index) => {
                 const { Marca: marca, Quantidade: quantidade } = marcaData
                 const percentage = (quantidade / totalProdutos) * 100
+                const categorias = getCategoriasDaMarca(marca)
+                const publicosAlvo = getPublicosAlvoDaMarca(marca)
                 
                 return (
-                  <div key={marca} className="flex items-center justify-between py-2 hover:bg-gray-50 rounded-lg px-2 transition-colors">
-                    <div className="flex items-center space-x-3 flex-1">
-                      <div className="flex items-center space-x-2 min-w-0 flex-1">
-                        <div className={`w-6 h-6 rounded-lg flex items-center justify-center text-xs font-bold text-white ${
+                  <div key={marca} className="py-1.5 hover:bg-gray-50 rounded-lg px-3 transition-colors">
+                    {/* Linha principal com ranking, marca, barra e números */}
+                    <div className="flex items-center">
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-4 h-4 rounded-lg flex items-center justify-center text-xs font-bold text-white ${
                           index === 0 ? 'bg-orange-500' : 
                           index === 1 ? 'bg-orange-400' : 
                           index === 2 ? 'bg-orange-300' : 
@@ -140,13 +179,12 @@ export const DistribuicaoMarcasModal: React.FC<DistribuicaoMarcasModalProps> = (
                         }`}>
                           {index + 1}
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-sm font-medium text-gray-900 truncate">{marca}</div>
-                          <div className="text-xs text-gray-500">{quantidade} produtos</div>
+                        <div className="min-w-[100px]">
+                          <div className="text-sm font-medium text-gray-900">{marca}</div>
                         </div>
                       </div>
                       
-                      <div className="flex-1 max-w-[200px] mx-4">
+                      <div className="flex-1 mx-3">
                         <div className="w-full bg-gray-100 rounded-full h-1.5">
                           <div
                             className={`h-1.5 rounded-full transition-all duration-500 ${
@@ -154,17 +192,49 @@ export const DistribuicaoMarcasModal: React.FC<DistribuicaoMarcasModalProps> = (
                             }`}
                             style={{ 
                               width: `${(quantidade / maxValue) * 100}%`,
-                              minWidth: '6px'
+                              minWidth: '4px'
                             }}
                           />
                         </div>
                       </div>
                       
-                      <div className="text-right min-w-[60px]">
+                      <div className="flex items-center space-x-2">
                         <div className="text-sm font-bold text-gray-900">{quantidade}</div>
-                        <div className="text-xs text-gray-500">{percentage.toFixed(0)}%</div>
+                        <div className="text-xs font-medium text-orange-600 min-w-[30px]">{percentage.toFixed(0)}%</div>
                       </div>
                     </div>
+
+                    {/* Tags das categorias e públicos-alvo lado a lado */}
+                    {(categorias.length > 0 || publicosAlvo.length > 0) && (
+                      <div className="flex items-center flex-wrap gap-1 mt-1 ml-6">
+                        {/* Tags de categorias */}
+                        {categorias.slice(0, 2).map((categoria) => (
+                          <span
+                            key={categoria}
+                            className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-50 text-gray-700 border border-gray-200"
+                          >
+                            {categoria}
+                          </span>
+                        ))}
+                        
+                        {/* Tags de públicos-alvo */}
+                        {publicosAlvo.slice(0, 2).map((publico) => (
+                          <span
+                            key={publico}
+                            className="inline-flex items-center px-1.5 py-0.5 rounded text-xs font-medium bg-gray-50 text-gray-700 border border-gray-200"
+                          >
+                            {publico}
+                          </span>
+                        ))}
+                        
+                        {/* Indicador de mais itens */}
+                        {(categorias.length > 2 || publicosAlvo.length > 2) && (
+                          <span className="text-xs text-gray-400">
+                            +{Math.max(0, categorias.length - 2) + Math.max(0, publicosAlvo.length - 2)} mais
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )
               })}

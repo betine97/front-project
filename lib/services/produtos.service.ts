@@ -52,7 +52,8 @@ export class ProdutosService {
       total: produtos.length,
       page,
       limit,
-      totalPages: Math.ceil(produtos.length / limit)
+      totalPages: Math.ceil(produtos.length / limit),
+      allData: produtos // Retorna todos os dados para uso em gráficos e filtros
     };
   }
 

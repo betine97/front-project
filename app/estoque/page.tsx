@@ -156,82 +156,68 @@ export default function EstoquePage() {
 
   return (
     <DashboardLayout>
-      <div className="space-y-4" style={{ padding: '4rem' }}>
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center shadow-md">
-              <Package className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl font-semibold text-gray-900">Estoque</h1>
-              <p className="text-sm text-gray-600">Gerencie seu estoque e lotes de produtos</p>
+      <div className="space-y-3" style={{ paddingLeft: '4rem', paddingTop: '4rem', paddingBottom: '4rem', paddingRight: '6rem' }}>
+        {/* Header Simplificado */}
+        <div>
+          <p className="text-sm text-gray-600 font-medium">Gerencie seu estoque e lotes de produtos</p>
+        </div>
+
+        {/* Stats Cards - Estilo ClickUp/Itaú */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="card-metric-modern min-h-[80px]">
+            <div className="flex items-center space-x-3">
+              <div className="icon-container-metric orange">
+                <Package className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-gray-900">{totalItens} itens total</p>
+              </div>
             </div>
           </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={handleCreateEstoque}
-              className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium px-3 py-2 rounded-lg transition-all duration-200 flex items-center space-x-2 shadow-lg hover:shadow-xl text-sm"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span>Nova Entrada</span>
-            </button>
+          
+          <div className="card-metric-modern min-h-[80px]">
+            <div className="flex items-center space-x-3">
+              <div className="icon-container-metric gray">
+                <TrendingUp className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-gray-900">{itensDisponiveis} disponíveis</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="card-metric-modern min-h-[80px]">
+            <div className="flex items-center space-x-3">
+              <div className="icon-container-metric gray">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-lg font-bold text-gray-900">{itensReservados} reservados</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="card-metric-modern min-h-[80px]">
+            <div className="flex items-center space-x-3">
+              <div className="icon-container-metric gray">
+                <TrendingDown className="w-5 h-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-lg font-bold text-gray-900 truncate">{formatCurrency(valorTotalEstoque)}</p>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-lg p-4 border border-gray-100 hover:border-gray-200 transition-all duration-200">
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center">
-                <Package className="w-4 h-4 text-green-500" />
-              </div>
-              <div className="text-xs text-green-600 font-medium">+3.2%</div>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 mb-1">Total de Itens</p>
-              <p className="text-xl font-bold text-gray-900">{totalItens}</p>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg p-4 border border-gray-100 hover:border-gray-200 transition-all duration-200">
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
-                <TrendingUp className="w-4 h-4 text-blue-500" />
-              </div>
-              <div className="text-xs text-green-600 font-medium">+8.1%</div>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 mb-1">Itens Disponíveis</p>
-              <p className="text-xl font-bold text-gray-900">{itensDisponiveis}</p>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg p-4 border border-gray-100 hover:border-gray-200 transition-all duration-200">
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-8 h-8 bg-yellow-50 rounded-lg flex items-center justify-center">
-                <AlertTriangle className="w-4 h-4 text-yellow-500" />
-              </div>
-              <div className="text-xs text-yellow-600 font-medium">-1.2%</div>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 mb-1">Itens Reservados</p>
-              <p className="text-xl font-bold text-gray-900">{itensReservados}</p>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg p-4 border border-gray-100 hover:border-gray-200 transition-all duration-200">
-            <div className="flex items-center justify-between mb-2">
-              <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center">
-                <TrendingDown className="w-4 h-4 text-purple-500" />
-              </div>
-              <div className="text-xs text-green-600 font-medium">+15.3%</div>
-            </div>
-            <div>
-              <p className="text-xs text-gray-500 mb-1">Valor Total</p>
-              <p className="text-xl font-bold text-gray-900">{formatCurrency(valorTotalEstoque)}</p>
-            </div>
-          </div>
+        {/* Action Buttons */}
+        <div className="flex items-center justify-end space-x-3 mb-4">
+          <button
+            onClick={handleCreateEstoque}
+            className="btn-primary flex items-center space-x-2 text-sm px-4 py-2"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Nova Entrada</span>
+          </button>
         </div>
 
         {/* Filters and Search */}
@@ -247,7 +233,7 @@ export default function EstoquePage() {
               <input
                 type="text"
                 placeholder="Buscar por lote ou data..."
-                className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors duration-200 bg-gray-50 focus:bg-white text-sm"
+                className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-colors duration-200 bg-gray-50 focus:bg-white text-sm"
                 onChange={(e) => setSearchTerm(e.target.value)}
                 value={searchTerm}
               />
@@ -255,7 +241,7 @@ export default function EstoquePage() {
 
             {/* Status Filter */}
             <select
-              className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-gray-50 focus:bg-white transition-colors duration-200 text-sm"
+              className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-50 focus:bg-white transition-colors duration-200 text-sm"
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
             >
@@ -268,7 +254,7 @@ export default function EstoquePage() {
 
             {/* Produto Filter */}
             <select
-              className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-gray-50 focus:bg-white transition-colors duration-200 text-sm"
+              className="px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-gray-50 focus:bg-white transition-colors duration-200 text-sm"
               value={selectedProduto}
               onChange={(e) => setSelectedProduto(e.target.value)}
             >

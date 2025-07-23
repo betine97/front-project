@@ -13,7 +13,8 @@ interface UseProdutosParams {
 }
 
 export function useProdutos(params: UseProdutosParams = {}) {
-  const [produtos, setProdutos] = useState<Produto[]>([]);
+  const [produtos, setProdutos] = useState<Produto[]>([]); // Produtos paginados
+  const [allProdutos, setAllProdutos] = useState<Produto[]>([]); // Todos os produtos
   const [loading, setLoading] = useState<LoadingState>('idle');
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
@@ -26,6 +27,9 @@ export function useProdutos(params: UseProdutosParams = {}) {
     try {
       const response = await produtosService.getAll(params);
       setProdutos(response.data);
+      if (response.allData) {
+        setAllProdutos(response.allData);
+      }
       setTotal(response.total);
       setTotalPages(response.totalPages);
       setLoading('success');
@@ -72,6 +76,7 @@ export function useProdutos(params: UseProdutosParams = {}) {
 
   return {
     produtos,
+    allProdutos,
     loading,
     error,
     total,

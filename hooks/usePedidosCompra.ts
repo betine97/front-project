@@ -53,8 +53,8 @@ export function usePedidosCompra(params: UsePedidosCompraParams = {}) {
   const updatePedido = async (id: number, pedido: Partial<PedidoCompra>) => {
     try {
       const pedidoAtualizado = await pedidosCompraService.update(id, pedido);
-      setPedidos(prev => 
-        prev.map(p => p.id === id ? pedidoAtualizado : p)
+            setPedidos(prev =>
+        prev.map(p => p.id_pedido === id ? pedidoAtualizado : p)
       );
       return pedidoAtualizado;
     } catch (err) {
@@ -65,7 +65,7 @@ export function usePedidosCompra(params: UsePedidosCompraParams = {}) {
   const deletePedido = async (id: number) => {
     try {
       await pedidosCompraService.delete(id);
-      setPedidos(prev => prev.filter(p => p.id !== id));
+      setPedidos(prev => prev.filter(p => p.id_pedido !== id));
     } catch (err) {
       throw err;
     }

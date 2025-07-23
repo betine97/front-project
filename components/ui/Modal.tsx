@@ -41,10 +41,10 @@ export function Modal({
   if (!isOpen) return null;
 
   const sizeClasses = {
-    sm: 'max-w-md',
-    md: 'max-w-lg',
-    lg: 'max-w-2xl',
-    xl: 'max-w-4xl',
+    sm: 'w-[400px] h-[300px]',
+    md: 'w-[1000px] h-[600px]',
+    lg: 'w-[800px] h-[500px]',
+    xl: 'w-[1200px] h-[700px]',
   };
 
   return (
@@ -56,7 +56,7 @@ export function Modal({
       />
       
       {/* Modal */}
-      <div className={`relative bg-white rounded-lg shadow-xl w-full mx-4 ${sizeClasses[size]} max-h-[90vh] overflow-hidden`}>
+      <div className={`relative bg-white rounded-lg shadow-xl mx-4 ${sizeClasses[size]} overflow-hidden flex flex-col`}>
         {/* Header */}
         {(title || showCloseButton) && (
           <div className="flex items-center justify-between p-4 border-b border-gray-200">
@@ -77,7 +77,7 @@ export function Modal({
         )}
         
         {/* Content */}
-        <div className="p-4 overflow-y-auto max-h-[calc(90vh-80px)]">
+        <div className="p-4 flex-1 overflow-hidden">
           {children}
         </div>
       </div>
