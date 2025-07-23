@@ -59,7 +59,7 @@ export const Sidebar: React.FC = () => {
       items: [
         { name: 'Financeiro', icon: DollarSign, path: '/financeiro', badge: null },
         { name: 'Plano de Crescimento', icon: TrendingUp, path: '/crescimento', badge: null },
-        { name: 'Metas', icon: Target, path: '/metas', badge: null },
+        { name: 'Contábil', icon: FileText, path: '/contabil', badge: null },
       ]
     },
     {
