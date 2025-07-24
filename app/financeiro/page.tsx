@@ -22,14 +22,16 @@ import {
   ArrowUpRight,
   ArrowDownRight,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
+  Info
 } from 'lucide-react';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { AnaliseFinanceiraComponent } from '../../components/financeiro/AnaliseFinanceira';
 import { GraficoFluxoCaixa } from '../../components/financeiro/GraficoFluxoCaixa';
 import { GraficoMargens } from '../../components/financeiro/GraficoMargens';
 import { GraficoBreakEven } from '../../components/financeiro/GraficoBreakEven';
-import { MovimentacaoFinanceira, ContaPagarReceber } from '../../types/entities';
+import { Tooltip } from '../../components/ui/Tooltip';
+import { MovimentacaoFinanceira, ContaPagarReceber, Movimentacao } from '../../types/entities';
 import { MESSAGES } from '../../constants/index';
 import { formatCurrency } from '../../lib/utils';
 import { useContasPagarReceber, useMovimentacoes } from '../../hooks/useContasPagarReceber';
@@ -44,7 +46,7 @@ export default function FinanceiroPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [showModal, setShowModal] = useState(false);
   const [editingMovimentacao, setEditingMovimentacao] = useState<MovimentacaoFinanceira | null>(null);
-  const [selectedMovimentacao, setSelectedMovimentacao] = useState<MovimentacaoFinanceira | null>(null);
+  const [selectedMovimentacao, setSelectedMovimentacao] = useState<Movimentacao | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(8);
   const [activeFinanceTab, setActiveFinanceTab] = useState<'movimentacoes' | 'pagar-receber'>('pagar-receber');
@@ -120,8 +122,8 @@ export default function FinanceiroPage() {
     setShowModal(true);
   };
 
-  const handleEditMovimentacao = (movimentacao: MovimentacaoFinanceira) => {
-    setEditingMovimentacao(movimentacao);
+  const handleEditMovimentacao = (movimentacao: Movimentacao) => {
+    setEditingMovimentacao(movimentacao as any);
     setShowModal(true);
   };
 
@@ -152,7 +154,7 @@ export default function FinanceiroPage() {
     }
   };
 
-  const handleViewMovimentacao = (movimentacao: MovimentacaoFinanceira) => {
+  const handleViewMovimentacao = (movimentacao: Movimentacao) => {
     setSelectedMovimentacao(movimentacao);
   };
 
@@ -199,7 +201,7 @@ export default function FinanceiroPage() {
       <div className="p-6 max-w-full overflow-x-hidden">
         {/* Stats Cards - Estilo ClickUp/Itau */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-          <div className="card-metric-modern min-h-[80px]">
+          <div className="card-metric-modern min-h-[100px] relative">
             <div className="flex items-center space-x-3">
               <div className="icon-container-metric orange">
                 <BarChart3 className="w-4 h-4" />
@@ -218,9 +220,14 @@ export default function FinanceiroPage() {
                 )}
               </div>
             </div>
+            <div className="absolute top-3 right-3">
+              <Tooltip content="Total de receitas geradas pela empresa no período selecionado. Representa o valor bruto das vendas antes de descontos e impostos." position="bottom">
+                <Info className="w-5 h-5 text-gray-400 hover:text-gray-600 cursor-pointer" />
+              </Tooltip>
+            </div>
           </div>
 
-          <div className="card-metric-modern min-h-[80px]">
+          <div className="card-metric-modern min-h-[80px] relative">
             <div className="flex items-center space-x-3">
               <div className={`icon-container-metric ${fluxoCaixa >= 0 ? 'green' : 'red'}`}>
                 <Activity className="w-4 h-4" />
@@ -241,9 +248,14 @@ export default function FinanceiroPage() {
                 )}
               </div>
             </div>
+            <div className="absolute top-3 right-3">
+              <Tooltip content="Diferença entre entradas e saídas de dinheiro no período. Positivo indica que a empresa está gerando mais caixa do que gastando." position="bottom">
+                <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
+              </Tooltip>
+            </div>
           </div>
 
-          <div className="card-metric-modern min-h-[80px]">
+          <div className="card-metric-modern min-h-[80px] relative">
             <div className="flex items-center space-x-3">
               <div className="icon-container-metric gray">
                 <Wallet className="w-4 h-4" />
@@ -253,9 +265,14 @@ export default function FinanceiroPage() {
                 <p className="text-xs text-gray-500">Capital de Giro</p>
               </div>
             </div>
+            <div className="absolute top-3 right-3">
+              <Tooltip content="Recursos disponíveis para financiar as operações diárias da empresa. Calculado como Ativo Circulante menos Passivo Circulante." position="bottom">
+                <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
+              </Tooltip>
+            </div>
           </div>
 
-          <div className="card-metric-modern min-h-[80px]">
+          <div className="card-metric-modern min-h-[80px] relative">
             <div className="flex items-center space-x-3">
               <div className={`icon-container-metric ${liquidezCorrente >= 1.5 ? 'green' : liquidezCorrente >= 1 ? 'orange' : 'red'}`}>
                 <Droplets className="w-4 h-4" />
@@ -279,6 +296,11 @@ export default function FinanceiroPage() {
                   </>
                 )}
               </div>
+            </div>
+            <div className="absolute top-3 right-3">
+              <Tooltip content="Capacidade da empresa de pagar suas dívidas de curto prazo. Calculada como Ativo Circulante dividido pelo Passivo Circulante. Ideal: acima de 1.5." position="bottom">
+                <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
+              </Tooltip>
             </div>
           </div>
         </div>   
@@ -787,7 +809,7 @@ export default function FinanceiroPage() {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {movimentacoesFiltradas.slice(startIndex, startIndex + itemsPerPage).length > 0 ? (
                       movimentacoesFiltradas.slice(startIndex, startIndex + itemsPerPage).map((mov) => (
-                        <tr key={mov.id} className="hover:bg-gray-50">
+                        <tr key={mov.id_movimentacao} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                               mov.tipo_transacao === 'Recebimento' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -797,23 +819,17 @@ export default function FinanceiroPage() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-900">{mov.descricao_movimentacao}</div>
-                            <div className="text-xs text-gray-500">{mov.categoria}</div>
+                            <div className="text-xs text-gray-500">{mov.tipo_transacao}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className={`text-sm font-medium ${mov.tipo_transacao === 'Recebimento' ? 'text-green-600' : 'text-red-600'}`}>
                               {mov.tipo_transacao === 'Recebimento' ? '+' : '-'}{formatCurrency(Math.abs(Number(mov.valor) || 0))}
                             </div>
-                            {mov.valor_original !== mov.valor && mov.valor_original != null && mov.valor != null && !isNaN(Number(mov.valor_original)) && !isNaN(Number(mov.valor)) && (
-                              <div className="text-xs text-gray-500">
-                                {mov.tipo_transacao === 'Recebimento' ? '+' : '-'}{formatCurrency(Math.abs(Number(mov.valor_original) - Number(mov.valor)) || 0)}
-                              </div>
-                            )}
+
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{new Date(mov.data_vencimento).toLocaleDateString('pt-BR')}</div>
-                            {mov.data_pagamento && (
-                              <div className="text-xs text-gray-500">Pago: {new Date(mov.data_pagamento).toLocaleDateString('pt-BR')}</div>
-                            )}
+                            <div className="text-sm text-gray-900">{new Date(mov.data_movimentacao).toLocaleDateString('pt-BR')}</div>
+                            <div className="text-xs text-gray-500">Status: {mov.status_transacao}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -826,8 +842,8 @@ export default function FinanceiroPage() {
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{mov.cliente_fornecedor}</div>
-                            <div className="text-xs text-gray-500">{mov.id_cliente_fornecedor}</div>
+                            <div className="text-sm text-gray-900">Conta {mov.id_conta_credito}</div>
+                            <div className="text-xs text-gray-500">Débito: {mov.id_conta_debito}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <button
@@ -843,7 +859,7 @@ export default function FinanceiroPage() {
                               <Edit className="w-4 h-4" />
                             </button>
                             <button
-                              onClick={() => handleDeleteMovimentacao(mov.id)}
+                              onClick={() => handleDeleteMovimentacao(mov.id_movimentacao)}
                               className="text-red-400 hover:text-red-600"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -921,7 +937,7 @@ export default function FinanceiroPage() {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {contasFiltradas.slice(startIndex, startIndex + itemsPerPage).length > 0 ? (
                       contasFiltradas.slice(startIndex, startIndex + itemsPerPage).map((conta) => (
-                        <tr key={conta.id} className="hover:bg-gray-50">
+                        <tr key={conta.id_conta} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                               conta.tipo_conta === 'Receber' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -931,7 +947,7 @@ export default function FinanceiroPage() {
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className="text-sm text-gray-900">{conta.descricao}</div>
-                            <div className="text-xs text-gray-500">{conta.categoria}</div>
+                            <div className="text-xs text-gray-500">{conta.tipo_conta}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <div className={`text-sm font-medium ${conta.tipo_conta === 'Receber' ? 'text-green-600' : 'text-red-600'}`}>

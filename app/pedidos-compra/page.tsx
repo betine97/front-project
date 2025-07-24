@@ -31,8 +31,11 @@ export default function PedidosCompraPage() {
   const [tipoOrdenacao, setTipoOrdenacao] = useState('');
   const [campoOrdenacao, setCampoOrdenacao] = useState('');
   const [direcaoOrdenacao, setDirecaoOrdenacao] = useState('');
-  // Mantido para uso futuro na alternância entre visualizações em grade e lista
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+  // Função para alternar entre visualizações em grade e lista
+  const toggleViewMode = () => {
+    setViewMode(viewMode === 'grid' ? 'list' : 'grid');
+  };
   const [showModal, setShowModal] = useState(false);
   const [editingPedido, setEditingPedido] = useState<PedidoCompra | null>(null);
   const [expandedPedido, setExpandedPedido] = useState<number | null>(null);
@@ -40,13 +43,10 @@ export default function PedidosCompraPage() {
   // Hooks para gerenciar dados
   const {
     pedidos: allPedidos,
-    // Mantido para uso futuro na exibição de itens de pedidos
     itens: allItens,
     loading,
     error,
-    // Mantido para uso futuro na paginação
     total,
-    // Mantido para uso futuro na paginação
     totalPages,
     createPedido,
     updatePedido,
@@ -177,6 +177,8 @@ export default function PedidosCompraPage() {
     if (confirm(MESSAGES.CONFIRM.DELETE)) {
       try {
         await deletePedido(id);
+        // Após excluir, atualiza a lista de pedidos
+        refetch();
       } catch (error) {
         console.error('Erro ao excluir pedido:', error);
       }
@@ -309,14 +311,50 @@ export default function PedidosCompraPage() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end space-x-3 mb-4">
-          <button
-            onClick={handleCreatePedido}
-            className="btn-primary flex items-center space-x-2 text-sm px-4 py-2"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Novo Pedido</span>
-          </button>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center space-x-3">
+            {/* View Mode Toggle */}
+            <button
+              onClick={toggleViewMode}
+              className="flex items-center space-x-2 px-3 py-2 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+              title={`Alternar para visualização em ${viewMode === 'list' ? 'grade' : 'lista'}`}
+            >
+              {viewMode === 'list' ? (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+                </svg>
+              )}
+              <span>{viewMode === 'list' ? 'Grade' : 'Lista'}</span>
+            </button>
+
+            {/* Pagination Info */}
+            {totalPages > 1 && (
+              <div className="text-sm text-gray-500">
+                Página 1 de {totalPages} ({total} pedidos)
+              </div>
+            )}
+
+            {/* Items Info */}
+            {allItens.length > 0 && (
+              <div className="text-sm text-gray-500">
+                {allItens.length} itens no total
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center space-x-3">
+            <button
+              onClick={handleCreatePedido}
+              className="btn-primary flex items-center space-x-2 text-sm px-4 py-2"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Novo Pedido</span>
+            </button>
+          </div>
         </div>
 
         {/* Filters and Search */}
@@ -682,7 +720,7 @@ export default function PedidosCompraPage() {
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900">Lista de Pedidos de Compra</h3>
-                  <p className="text-xs text-gray-500">{filteredPedidos.length} {filteredPedidos.length === 1 ? 'pedido encontrado' : 'pedidos encontrados'}</p>
+                  <p className="text-xs text-gray-500">{filteredPedidos.length} de {total} {filteredPedidos.length === 1 ? 'pedido encontrado' : 'pedidos encontrados'}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
@@ -760,6 +798,15 @@ export default function PedidosCompraPage() {
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                              </svg>
+                            </button>
+                            <button
+                              onClick={() => handleDeletePedido(pedido.id_pedido)}
+                              className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-150"
+                              title="Excluir pedido"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                               </svg>
                             </button>
                             <button

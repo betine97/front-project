@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Users, Plus, Mail, Phone, MapPin, User, Building, Target, TrendingUp, DollarSign } from 'lucide-react';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { PersonasPublicoAlvo } from '../../components/clientes/PersonasPublicoAlvo';
+import { ProgramaFidelidade } from '../../components/clientes/ProgramaFidelidade';
 import { Cliente } from '../../types/entities';
 import { MESSAGES } from '../../constants/index';
 import { formatCurrency } from '../../lib/utils';
@@ -396,6 +397,19 @@ export default function ClientesPage() {
         {/* Grid de Personas e Públicos */}
         <div className="mb-12">
           <PersonasPublicoAlvo />
+        </div>
+
+        {/* Seção Programa de Fidelidade */}
+        <div className="flex items-start justify-between mb-6 mt-12">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 mb-1">Programa de Fidelidade</h2>
+            <p className="text-sm text-gray-500">Configure critérios de pontuação e recompensas para engajar e fidelizar seus clientes.</p>
+          </div>
+        </div>
+
+        {/* Componente do Programa de Fidelidade */}
+        <div className="mb-12">
+          <ProgramaFidelidade />
         </div>
 
         {/* Título da Seção de Clientes */}

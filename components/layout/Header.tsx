@@ -1,9 +1,16 @@
 'use client'
 
 import React from 'react'
+import { useRouter } from 'next/navigation'
 import { Search, Bell, Settings, Coins } from 'lucide-react'
 
 export const Header: React.FC = () => {
+  const router = useRouter()
+
+  const handleSettingsClick = () => {
+    router.push('/configuracoes')
+  }
+
   return (
     <header className="bg-white border-b border-gray-200 h-16 flex items-center px-6 sticky top-0 z-10">
       {/* Search Bar */}
@@ -37,7 +44,10 @@ export const Header: React.FC = () => {
         </button>
 
         {/* Settings */}
-        <button className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-200">
+        <button 
+          onClick={handleSettingsClick}
+          className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+        >
           <Settings className="w-4 h-4 text-gray-600" />
         </button>
 

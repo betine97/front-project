@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 interface TooltipProps {
   content: string;
@@ -17,10 +18,68 @@ export const Tooltip: React.FC<TooltipProps> = ({
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+  const triggerRef = useRef<HTMLDivElement>(null);
+  const tooltipRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
+
+  const updateTooltipPosition = () => {
+    if (!triggerRef.current) return;
+    
+    const triggerRect = triggerRef.current.getBoundingClientRect();
+    const scrollY = window.scrollY || document.documentElement.scrollTop;
+    const scrollX = window.scrollX || document.documentElement.scrollLeft;
+    
+    // Estimativa do tamanho do tooltip (será ajustado depois que renderizar)
+    const tooltipWidth = 220;
+    const tooltipHeight = 70;
+    
+    let top = 0;
+    let left = 0;
+    
+    switch (position) {
+      case 'top':
+        top = triggerRect.top + scrollY - tooltipHeight - 12;
+        left = triggerRect.left + scrollX + (triggerRect.width / 2) - (tooltipWidth / 2);
+        break;
+      case 'bottom':
+        top = triggerRect.bottom + scrollY + 12;
+        left = triggerRect.left + scrollX + (triggerRect.width / 2) - (tooltipWidth / 2);
+        break;
+      case 'left':
+        top = triggerRect.top + scrollY + (triggerRect.height / 2) - (tooltipHeight / 2);
+        left = triggerRect.left + scrollX - tooltipWidth - 12;
+        break;
+      case 'right':
+        top = triggerRect.top + scrollY + (triggerRect.height / 2) - (tooltipHeight / 2);
+        left = triggerRect.right + scrollX + 12;
+        break;
+    }
+    
+    // Ajustar para manter dentro da viewport com margem de 20px
+    const margin = 20;
+    if (left < margin) left = margin;
+    if (left + tooltipWidth > window.innerWidth - margin) {
+      left = window.innerWidth - tooltipWidth - margin;
+    }
+    if (top < margin + scrollY) top = margin + scrollY;
+    if (top + tooltipHeight > window.innerHeight + scrollY - margin) {
+      top = window.innerHeight + scrollY - tooltipHeight - margin;
+    }
+    
+    setTooltipPosition({ top, left });
+  };
 
   const showTooltip = () => {
     const id = setTimeout(() => {
       setIsVisible(true);
+      // Use setTimeout to ensure the tooltip is rendered before measuring
+      setTimeout(updateTooltipPosition, 0);
     }, delay);
     setTimeoutId(id);
   };
@@ -33,51 +92,47 @@ export const Tooltip: React.FC<TooltipProps> = ({
     setIsVisible(false);
   };
 
-  const getPositionClasses = () => {
-    switch (position) {
-      case 'top':
-        return 'bottom-full left-1/2 transform -translate-x-1/2 mb-2';
-      case 'bottom':
-        return 'top-full left-1/2 transform -translate-x-1/2 mt-2';
-      case 'left':
-        return 'right-full top-1/2 transform -translate-y-1/2 mr-2';
-      case 'right':
-        return 'left-full top-1/2 transform -translate-y-1/2 ml-2';
-      default:
-        return 'bottom-full left-1/2 transform -translate-x-1/2 mb-2';
+  // Update position on window resize
+  useEffect(() => {
+    if (isVisible) {
+      window.addEventListener('resize', updateTooltipPosition);
+      window.addEventListener('scroll', updateTooltipPosition);
+      
+      return () => {
+        window.removeEventListener('resize', updateTooltipPosition);
+        window.removeEventListener('scroll', updateTooltipPosition);
+      };
     }
-  };
-
-  const getArrowClasses = () => {
-    switch (position) {
-      case 'top':
-        return 'top-full left-1/2 transform -translate-x-1/2 border-l-transparent border-r-transparent border-b-transparent border-t-gray-800';
-      case 'bottom':
-        return 'bottom-full left-1/2 transform -translate-x-1/2 border-l-transparent border-r-transparent border-t-transparent border-b-gray-800';
-      case 'left':
-        return 'left-full top-1/2 transform -translate-y-1/2 border-t-transparent border-b-transparent border-r-transparent border-l-gray-800';
-      case 'right':
-        return 'right-full top-1/2 transform -translate-y-1/2 border-t-transparent border-b-transparent border-l-transparent border-r-gray-800';
-      default:
-        return 'top-full left-1/2 transform -translate-x-1/2 border-l-transparent border-r-transparent border-b-transparent border-t-gray-800';
-    }
-  };
+  }, [isVisible]);
 
   return (
-    <div 
-      className="relative inline-block"
-      onMouseEnter={showTooltip}
-      onMouseLeave={hideTooltip}
-    >
-      {children}
-      {isVisible && (
-        <div className={`absolute z-50 ${getPositionClasses()}`}>
-          <div className="bg-gray-800 text-white text-xs px-2 py-1 rounded-md shadow-lg whitespace-nowrap max-w-xs">
+    <>
+      <div 
+        ref={triggerRef}
+        className="inline-block"
+        onMouseEnter={showTooltip}
+        onMouseLeave={hideTooltip}
+      >
+        {children}
+      </div>
+      
+      {mounted && isVisible && createPortal(
+        <div 
+          ref={tooltipRef}
+          className="fixed z-[1070]"
+          style={{ 
+            top: `${tooltipPosition.top}px`, 
+            left: `${tooltipPosition.left}px`,
+            pointerEvents: 'none'
+          }}
+        >
+          <div className="bg-white text-gray-800 text-xs px-3 py-2 rounded-lg shadow-lg border border-gray-200" 
+               style={{ minWidth: '200px', maxWidth: '280px', whiteSpace: 'normal' }}>
             {content}
           </div>
-          <div className={`absolute w-0 h-0 border-2 ${getArrowClasses()}`}></div>
-        </div>
+        </div>,
+        document.body
       )}
-    </div>
+    </>
   );
 };
