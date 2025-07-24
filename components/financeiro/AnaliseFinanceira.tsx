@@ -174,10 +174,13 @@ export function AnaliseFinanceiraComponent() {
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
           {[
+            { key: 'ontem', label: 'Ontem' },
             { key: '7d', label: '7 dias' },
-            { key: '30d', label: '30 dias' },
+            { key: '30d', label: '30 dias atrás' },
+            { key: 'mes-passado', label: 'Mês passado' },
             { key: '90d', label: '90 dias' },
-            { key: '1y', label: '1 ano' }
+            { key: 'semestre-passado', label: 'Semestre passado' },
+            { key: 'ano-passado', label: 'Ano passado' }
           ].map((periodo) => (
             <button
               key={periodo.key}

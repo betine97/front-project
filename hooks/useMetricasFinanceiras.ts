@@ -128,3 +128,65 @@ export const useLiquidezCorrente = () => {
     refetch: fetchLiquidezCorrente
   };
 };
+
+interface MargensResponse {
+  lucro_bruto: {
+    percentual: number;
+    valor: number;
+  };
+  lucro_liquido: {
+    percentual: number;
+    valor: number;
+  };
+  lucro_operacional: {
+    percentual: number;
+    valor: number;
+  };
+}
+
+export const useMargens = () => {
+  const [margens, setMargens] = useState<MargensResponse>({
+    lucro_bruto: { percentual: 0, valor: 0 },
+    lucro_liquido: { percentual: 0, valor: 0 },
+    lucro_operacional: { percentual: 0, valor: 0 }
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchMargens = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const response = await fetch('http://localhost:8080/margens');
+      
+      if (!response.ok) {
+        throw new Error(`Erro na API: ${response.status}`);
+      }
+      
+      const data: MargensResponse = await response.json();
+      setMargens(data);
+    } catch (err) {
+      console.error('Erro ao buscar margens:', err);
+      setError(err instanceof Error ? err.message : 'Erro desconhecido');
+      setMargens({
+        lucro_bruto: { percentual: 0, valor: 0 },
+        lucro_liquido: { percentual: 0, valor: 0 },
+        lucro_operacional: { percentual: 0, valor: 0 }
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMargens();
+  }, []);
+
+  return {
+    margens,
+    loading,
+    error,
+    refetch: fetchMargens
+  };
+};

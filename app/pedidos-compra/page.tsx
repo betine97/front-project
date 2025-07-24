@@ -1,13 +1,13 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, Plus, Package, Truck, Calendar, DollarSign } from 'lucide-react';
+import { ShoppingCart, Plus, Package, Truck, DollarSign } from 'lucide-react';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { NewPedidoModal } from '../../components/produtos/NewPedidoModal';
 import { usePedidosCompra } from '../../hooks/usePedidosCompra';
 import { useFornecedores } from '../../hooks/useFornecedores';
 import { useProdutos } from '../../hooks/useProdutos';
-import { PedidoCompra, ItemPedido } from '../../types/entities';
+import { PedidoCompra } from '../../types/entities';
 import { formatCurrency } from '../../lib/utils';
 import { MESSAGES } from '../../constants/index';
 
@@ -31,6 +31,7 @@ export default function PedidosCompraPage() {
   const [tipoOrdenacao, setTipoOrdenacao] = useState('');
   const [campoOrdenacao, setCampoOrdenacao] = useState('');
   const [direcaoOrdenacao, setDirecaoOrdenacao] = useState('');
+  // Mantido para uso futuro na alternância entre visualizações em grade e lista
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [showModal, setShowModal] = useState(false);
   const [editingPedido, setEditingPedido] = useState<PedidoCompra | null>(null);
@@ -39,10 +40,13 @@ export default function PedidosCompraPage() {
   // Hooks para gerenciar dados
   const {
     pedidos: allPedidos,
+    // Mantido para uso futuro na exibição de itens de pedidos
     itens: allItens,
     loading,
     error,
+    // Mantido para uso futuro na paginação
     total,
+    // Mantido para uso futuro na paginação
     totalPages,
     createPedido,
     updatePedido,
