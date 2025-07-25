@@ -41,6 +41,72 @@ export default function ContabilPage() {
     financiamento: false
   });
 
+  // Estado para controlar contas habilitadas/desabilitadas
+  const [contasHabilitadas, setContasHabilitadas] = useState<{[key: string]: boolean}>({});
+
+  // Estado para armazenar contas adicionadas dinamicamente
+  const [contasAdicionadas, setContasAdicionadas] = useState<{
+    investimento: any[];
+    financiamento: any[];
+  }>({
+    investimento: [],
+    financiamento: []
+  });
+
+  // Função para alternar estado da conta
+  const toggleContaHabilitada = (nomeConta: string) => {
+    setContasHabilitadas(prev => ({
+      ...prev,
+      [nomeConta]: prev[nomeConta] === true ? false : true
+    }));
+  };
+
+  // Função para verificar se há contas habilitadas na seção operacional da logística
+  const hasContasOperacionaisLogistica = () => {
+    return contasContabeis.logistica.some(conta => 
+      contasHabilitadas[conta.nomeConta] === true
+    );
+  };
+
+  // Função para verificar se há contas habilitadas na seção de investimento da logística
+  const hasContasInvestimentoLogistica = () => {
+    return contasAdicionadas.investimento.some(conta => 
+      contasHabilitadas[conta.nomeConta] === true
+    );
+  };
+
+  // Função para verificar se há contas habilitadas na seção de financiamento da logística
+  const hasContasFinanciamentoLogistica = () => {
+    return contasAdicionadas.financiamento.some(conta => 
+      contasHabilitadas[conta.nomeConta] === true
+    );
+  };
+
+  // Funções para contar contas por seção
+  const getContasOperacionaisInfo = () => {
+    const total = contasContabeis.logistica.length;
+    const ativas = contasContabeis.logistica.filter(conta => 
+      contasHabilitadas[conta.nomeConta] === true
+    ).length;
+    return { total, ativas };
+  };
+
+  const getContasInvestimentoInfo = () => {
+    const total = contasAdicionadas.investimento.length;
+    const ativas = contasAdicionadas.investimento.filter(conta => 
+      contasHabilitadas[conta.nomeConta] === true
+    ).length;
+    return { total, ativas };
+  };
+
+  const getContasFinanciamentoInfo = () => {
+    const total = contasAdicionadas.financiamento.length;
+    const ativas = contasAdicionadas.financiamento.filter(conta => 
+      contasHabilitadas[conta.nomeConta] === true
+    ).length;
+    return { total, ativas };
+  };
+
   // Contas contábeis por centro de custo
   const contasContabeis = {
     vendas: [
@@ -859,7 +925,12 @@ export default function ContabilPage() {
                       </div>
                     </div>
                     <div className="absolute top-3 right-3">
-                      <Tooltip content="Serviço de uso recorrente ou de curto prazo, necessário para tocar o negócio no dia a dia." position="bottom">
+                      <Tooltip content={
+                        <div>
+                          <div className="font-bold">Atividades do dia a dia da logística</div>
+                          <div className="mt-2">Exemplo: Serviço de uso recorrente ou de curto prazo, necessário para tocar o negócio no dia a dia.</div>
+                        </div>
+                      } position="bottom">
                         <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
                       </Tooltip>
                     </div>
@@ -873,9 +944,11 @@ export default function ContabilPage() {
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                       Administração
                     </span>
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
-                      Logística
-                    </span>
+                    {hasContasOperacionaisLogistica() && (
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                        Logística
+                      </span>
+                    )}
                     <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
                       Marketing
                     </span>
@@ -905,17 +978,24 @@ export default function ContabilPage() {
                       </div>
                     </div>
                     <div className="absolute top-3 right-3">
-                      <Tooltip content="Aquisição ou melhoria de um ativo de longo prazo (ou gera direito econômico duradouro)." position="bottom">
+                      <Tooltip content={
+                        <div>
+                          <div className="font-bold">Projetos de expansão ou compra de ativos logísticos</div>
+                          <div className="mt-2">Exemplo: Aquisição ou melhoria de um ativo de longo prazo (ou gera direito econômico duradouro).</div>
+                        </div>
+                      } position="bottom">
                         <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
                       </Tooltip>
                     </div>
                   </div>
                   
-                  {/* Tag do Centro de Custo */}
+                  {/* Tags dos Centros de Custo */}
                   <div className="flex flex-wrap gap-1 mt-2">
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
-                      Tecnologia
-                    </span>
+                    {hasContasInvestimentoLogistica() && (
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                        Logística
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -933,47 +1013,29 @@ export default function ContabilPage() {
                       </div>
                     </div>
                     <div className="absolute top-3 right-3">
-                      <Tooltip content="Serviço vinculado a captar ou pagar recursos de terceiros." position="bottom">
+                      <Tooltip content={
+                        <div>
+                          <div className="font-bold">Entradas/saídas ligadas a empréstimos para logística</div>
+                          <div className="mt-2">Exemplo: Serviço vinculado a captar ou pagar recursos de terceiros.</div>
+                        </div>
+                      } position="bottom">
                         <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
                       </Tooltip>
                     </div>
                   </div>
                   
-                  {/* Tag do Centro de Custo */}
+                  {/* Tags dos Centros de Custo */}
                   <div className="flex flex-wrap gap-1 mt-2">
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      Financiamento
-                    </span>
+                    {hasContasFinanciamentoLogistica() && (
+                      <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                        Logística
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
 
-              <div className="card">
-                <div className="p-4">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm font-medium text-gray-900">Saldo Inicial de Caixa</span>
-                      <span className="text-sm font-bold text-gray-600">
-                        {formatCurrency(dadosContabeis.fluxo_caixa.saldo_inicial)}
-                      </span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                      <span className="text-sm font-medium text-gray-900">Variação do Caixa</span>
-                      <span className="text-sm font-bold text-blue-600">
-                        {formatCurrency(dadosContabeis.fluxo_caixa.variacao_caixa)}
-                      </span>
-                    </div>
-                    
-                    <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg border-2 border-green-200">
-                      <span className="text-base font-bold text-gray-900">Saldo Final de Caixa</span>
-                      <span className="text-base font-bold text-green-600">
-                        {formatCurrency(dadosContabeis.fluxo_caixa.saldo_final)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+
             </div>
 
             {/* Seção Centro de Custos */}
@@ -1299,7 +1361,18 @@ export default function ContabilPage() {
                     >
                       <div className="flex items-center space-x-2">
                         <span className="text-sm font-medium text-gray-700">Operacional</span>
-                        <Tooltip content="Exemplo: frete, armazenamento de estoque" position="right">
+                        <span className="text-xs text-gray-500">
+                          {(() => {
+                            const { total, ativas } = getContasOperacionaisInfo();
+                            return total > 0 ? `${ativas}/${total} ativas` : 'Nenhuma conta cadastrada';
+                          })()}
+                        </span>
+                        <Tooltip content={
+                          <div>
+                            <div className="font-bold">Atividades do dia a dia da logística</div>
+                            <div className="mt-2">Exemplo: frete, armazenamento de estoque</div>
+                          </div>
+                        } position="right">
                           <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
                         </Tooltip>
                       </div>
@@ -1329,6 +1402,9 @@ export default function ContabilPage() {
                               </th>
                               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Descrição
+                              </th>
+                              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
                               </th>
                             </tr>
                           </thead>
@@ -1362,12 +1438,24 @@ export default function ContabilPage() {
                                 <td className="px-4 py-3 text-sm text-gray-600">
                                   {conta.descricao}
                                 </td>
+                                <td className="px-4 py-3 text-center">
+                                  <button
+                                    onClick={() => toggleContaHabilitada(conta.nomeConta)}
+                                    className={`w-8 h-4 rounded-full transition-colors duration-200 relative ${
+                                      contasHabilitadas[conta.nomeConta] === true ? 'bg-green-500' : 'bg-gray-300'
+                                    }`}
+                                  >
+                                    <div className={`w-3 h-3 bg-white rounded-full absolute top-0.5 transition-transform duration-200 ${
+                                      contasHabilitadas[conta.nomeConta] === true ? 'translate-x-4' : 'translate-x-0.5'
+                                    }`} />
+                                  </button>
+                                </td>
                               </tr>
                             ))}
                             
                             {/* Linha para adicionar nova conta operacional */}
                             <tr className="hover:bg-gray-50 border-t-2 border-dashed border-gray-300">
-                              <td className="px-4 py-3 text-center" colSpan={5}>
+                              <td className="px-4 py-3 text-center" colSpan={6}>
                                 <button className="flex items-center justify-center space-x-2 text-gray-500 hover:text-orange-600 transition-colors w-full py-2">
                                   <Plus className="w-4 h-4" />
                                   <span className="text-sm font-medium">Adicionar nova conta operacional</span>
@@ -1391,7 +1479,18 @@ export default function ContabilPage() {
                     >
                       <div className="flex items-center space-x-2">
                         <span className="text-sm font-medium text-gray-700">Investimento</span>
-                        <Tooltip content="Exemplo: construção ou compra de um centro de distribuição, empilhadeiras, sistemas WMS capitalizados" position="right">
+                        <span className="text-xs text-gray-500">
+                          {(() => {
+                            const { total, ativas } = getContasInvestimentoInfo();
+                            return total > 0 ? `${ativas}/${total} ativas` : 'Nenhuma conta cadastrada';
+                          })()}
+                        </span>
+                        <Tooltip content={
+                          <div>
+                            <div className="font-bold">Projetos de expansão ou compra de ativos logísticos</div>
+                            <div className="mt-2">Exemplo: construção ou compra de um centro de distribuição, empilhadeiras, sistemas WMS capitalizados</div>
+                          </div>
+                        } position="right">
                           <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
                         </Tooltip>
                       </div>
@@ -1422,12 +1521,15 @@ export default function ContabilPage() {
                               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Descrição
                               </th>
+                              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
+                              </th>
                             </tr>
                           </thead>
                           <tbody className="bg-white">
                             {/* Linha para adicionar nova conta de investimento */}
                             <tr className="hover:bg-gray-50">
-                              <td className="px-4 py-3 text-center" colSpan={5}>
+                              <td className="px-4 py-3 text-center" colSpan={6}>
                                 <button className="flex items-center justify-center space-x-2 text-gray-500 hover:text-orange-600 transition-colors w-full py-2">
                                   <Plus className="w-4 h-4" />
                                   <span className="text-sm font-medium">Adicionar nova conta de investimento</span>
@@ -1451,7 +1553,18 @@ export default function ContabilPage() {
                     >
                       <div className="flex items-center space-x-2">
                         <span className="text-sm font-medium text-gray-700">Financiamento</span>
-                        <Tooltip content="Exemplo: levantamento de empréstimo para financiar a frota / pagamento de parcelas desse financiamento" position="right">
+                        <span className="text-xs text-gray-500">
+                          {(() => {
+                            const { total, ativas } = getContasFinanciamentoInfo();
+                            return total > 0 ? `${ativas}/${total} ativas` : 'Nenhuma conta cadastrada';
+                          })()}
+                        </span>
+                        <Tooltip content={
+                          <div>
+                            <div className="font-bold">Entradas/saídas ligadas a empréstimos para logística</div>
+                            <div className="mt-2">Exemplo: levantamento de empréstimo para financiar a frota / pagamento de parcelas desse financiamento</div>
+                          </div>
+                        } position="right">
                           <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
                         </Tooltip>
                       </div>
@@ -1482,12 +1595,15 @@ export default function ContabilPage() {
                               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Descrição
                               </th>
+                              <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Status
+                              </th>
                             </tr>
                           </thead>
                           <tbody className="bg-white">
                             {/* Linha para adicionar nova conta de financiamento */}
                             <tr className="hover:bg-gray-50">
-                              <td className="px-4 py-3 text-center" colSpan={5}>
+                              <td className="px-4 py-3 text-center" colSpan={6}>
                                 <button className="flex items-center justify-center space-x-2 text-gray-500 hover:text-orange-600 transition-colors w-full py-2">
                                   <Plus className="w-4 h-4" />
                                   <span className="text-sm font-medium">Adicionar nova conta de financiamento</span>
@@ -1961,34 +2077,7 @@ export default function ContabilPage() {
                 </div>
               )}
 
-              {/* Resumo dos Centros de Custos */}
-              <div className="card">
-                <div className="p-4 border-b border-gray-100">
-                  <h5 className="text-sm font-semibold text-gray-900">Resumo por Centro de Custos</h5>
-                </div>
-                <div className="p-4">
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Total de Centros Ativos</span>
-                      <span className="text-sm font-semibold text-gray-900">9</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Total de Custos Alocados</span>
-                      <span className="text-sm font-semibold text-gray-900">R$ 0,00</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm text-gray-600">Centro com Maior Custo</span>
-                      <span className="text-sm font-semibold text-gray-900">-</span>
-                    </div>
-                    <div className="pt-2 border-t border-gray-200">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-gray-900">Total Geral</span>
-                        <span className="text-sm font-bold text-orange-600">R$ 0,00</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+
             </div>
           </div>
         )}
@@ -1997,81 +2086,465 @@ export default function ContabilPage() {
           <div className="space-y-6">
             <h3 className="text-lg font-semibold text-gray-900">Gestão de Impostos</h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-              <MetricCard
-                title="ICMS"
-                value={dadosContabeis.impostos.icms}
-                subtitle="Imposto sobre Circulação"
-                icon={Calculator}
-                color="blue"
-                format="currency"
-              />
-              <MetricCard
-                title="PIS/COFINS"
-                value={dadosContabeis.impostos.pis + dadosContabeis.impostos.cofins}
-                subtitle="Contribuições Sociais"
-                icon={FileText}
-                color="orange"
-                format="currency"
-              />
-              <MetricCard
-                title="IRPJ/CSLL"
-                value={dadosContabeis.impostos.irpj + dadosContabeis.impostos.csll}
-                subtitle="Imposto de Renda"
-                icon={Building}
-                color="red"
-                format="currency"
-              />
+            {/* Dashboard Fiscal (KPI Hub) */}
+            <div className="space-y-4">
+              <h4 className="text-md font-semibold text-gray-800">Dashboard Fiscal</h4>
+              
+              {/* KPIs Principais */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="card-metric-modern">
+                  <div className="flex items-center space-x-3">
+                    <div className="icon-container-metric red">
+                      <Calculator className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-lg font-bold text-gray-900">18,5%</p>
+                      <p className="text-xs text-gray-500">Carga Tributária</p>
+                      <p className="text-xs text-gray-400">Sobre faturamento</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="card-metric-modern">
+                  <div className="flex items-center space-x-3">
+                    <div className="icon-container-metric orange">
+                      <AlertTriangle className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-lg font-bold text-orange-600">R$ 0,00</p>
+                      <p className="text-xs text-gray-500">Impostos Pendentes</p>
+                      <p className="text-xs text-gray-400">Vencimento próximo</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="card-metric-modern">
+                  <div className="flex items-center space-x-3">
+                    <div className="icon-container-metric green">
+                      <CheckCircle className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-lg font-bold text-green-600">R$ 0,00</p>
+                      <p className="text-xs text-gray-500">Impostos Pagos</p>
+                      <p className="text-xs text-gray-400">Este mês</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="card-metric-modern">
+                  <div className="flex items-center space-x-3">
+                    <div className="icon-container-metric blue">
+                      <TrendingUp className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <p className="text-lg font-bold text-blue-600">+0%</p>
+                      <p className="text-xs text-gray-500">Tendência Mensal</p>
+                      <p className="text-xs text-gray-400">vs mês anterior</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Gráfico de Tendência */}
+              <div className="card">
+                <div className="p-4 border-b border-gray-100">
+                  <h5 className="text-sm font-semibold text-gray-900">Evolução da Carga Tributária</h5>
+                </div>
+                <div className="p-4">
+                  <div className="h-32 flex items-center justify-center bg-gray-50 rounded-lg">
+                    <div className="text-center">
+                      <BarChart3 className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+                      <p className="text-sm text-gray-500">Gráfico de tendência mensal</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
+            {/* Calendário & Linha do Tempo Fiscal */}
+            <div className="space-y-4">
+              <h4 className="text-md font-semibold text-gray-800">Calendário & Linha do Tempo Fiscal</h4>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Calendário de Obrigações */}
+                <div className="card">
+                  <div className="p-4 border-b border-gray-100">
+                    <h5 className="text-sm font-semibold text-gray-900">Próximas Obrigações</h5>
+                  </div>
+                  <div className="p-4">
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg border-l-4 border-red-500">
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">ICMS - Janeiro</p>
+                          <p className="text-xs text-gray-500">Vencimento: 20/02/2025</p>
+                        </div>
+                        <span className="text-xs font-medium text-red-600 bg-red-100 px-2 py-1 rounded-full">
+                          5 dias
+                        </span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-500">
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">PIS/COFINS</p>
+                          <p className="text-xs text-gray-500">Vencimento: 25/02/2025</p>
+                        </div>
+                        <span className="text-xs font-medium text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full">
+                          10 dias
+                        </span>
+                      </div>
+                      
+                      <div className="flex items-center justify-between p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500">
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">IRPJ/CSLL</p>
+                          <p className="text-xs text-gray-500">Vencimento: 31/03/2025</p>
+                        </div>
+                        <span className="text-xs font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+                          44 dias
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Linha do Tempo */}
+                <div className="card">
+                  <div className="p-4 border-b border-gray-100">
+                    <h5 className="text-sm font-semibold text-gray-900">Histórico Recente</h5>
+                  </div>
+                  <div className="p-4">
+                    <div className="space-y-4">
+                      <div className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900">ICMS Dezembro - Pago</p>
+                          <p className="text-xs text-gray-500">20/01/2025 - R$ 0,00</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900">PIS/COFINS - Pago</p>
+                          <p className="text-xs text-gray-500">25/01/2025 - R$ 0,00</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-start space-x-3">
+                        <div className="w-2 h-2 bg-gray-300 rounded-full mt-2"></div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium text-gray-900">IPI - Isento</p>
+                          <p className="text-xs text-gray-500">Janeiro 2025</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Resumo Detalhado de Impostos */}
             <div className="card">
               <div className="p-4 border-b border-gray-100">
-                <h4 className="text-sm font-semibold text-gray-900">Resumo de Impostos</h4>
+                <h4 className="text-sm font-semibold text-gray-900">Resumo Detalhado de Impostos</h4>
               </div>
               <div className="p-4">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">ICMS</span>
-                    <span className="text-sm font-semibold text-gray-900">
-                      {formatCurrency(dadosContabeis.impostos.icms)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">IPI</span>
-                    <span className="text-sm font-semibold text-gray-900">
-                      {formatCurrency(dadosContabeis.impostos.ipi)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">PIS</span>
-                    <span className="text-sm font-semibold text-gray-900">
-                      {formatCurrency(dadosContabeis.impostos.pis)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">COFINS</span>
-                    <span className="text-sm font-semibold text-gray-900">
-                      {formatCurrency(dadosContabeis.impostos.cofins)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">IRPJ</span>
-                    <span className="text-sm font-semibold text-gray-900">
-                      {formatCurrency(dadosContabeis.impostos.irpj)}
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">CSLL</span>
-                    <span className="text-sm font-semibold text-gray-900">
-                      {formatCurrency(dadosContabeis.impostos.csll)}
-                    </span>
-                  </div>
-                  <div className="pt-2 border-t border-gray-200">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-sm font-bold text-gray-900">Total de Impostos</span>
-                      <span className="text-sm font-bold text-red-600">
-                        {formatCurrency(dadosContabeis.impostos.total_impostos)}
+                      <span className="text-sm text-gray-600">ICMS</span>
+                      <span className="text-sm font-semibold text-gray-900">
+                        {formatCurrency(dadosContabeis.impostos.icms)}
                       </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">IPI</span>
+                      <span className="text-sm font-semibold text-gray-900">
+                        {formatCurrency(dadosContabeis.impostos.ipi)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">PIS</span>
+                      <span className="text-sm font-semibold text-gray-900">
+                        {formatCurrency(dadosContabeis.impostos.pis)}
+                      </span>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">COFINS</span>
+                      <span className="text-sm font-semibold text-gray-900">
+                        {formatCurrency(dadosContabeis.impostos.cofins)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">IRPJ</span>
+                      <span className="text-sm font-semibold text-gray-900">
+                        {formatCurrency(dadosContabeis.impostos.irpj)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm text-gray-600">CSLL</span>
+                      <span className="text-sm font-semibold text-gray-900">
+                        {formatCurrency(dadosContabeis.impostos.csll)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="pt-4 border-t border-gray-200 mt-4">
+                  <div className="flex items-center justify-between">
+                    <span className="text-base font-bold text-gray-900">Total de Impostos</span>
+                    <span className="text-base font-bold text-red-600">
+                      {formatCurrency(dadosContabeis.impostos.total_impostos)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Gestão de Obrigações */}
+            <div className="space-y-4">
+              <h4 className="text-md font-semibold text-gray-800">Gestão de Obrigações</h4>
+              
+              <div className="card">
+                <div className="p-4 border-b border-gray-100">
+                  <div className="flex items-center justify-between">
+                    <h5 className="text-sm font-semibold text-gray-900">Status de Entrega das Obrigações</h5>
+                    <div className="flex items-center space-x-4 text-xs">
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                        <span className="text-gray-600">Entregue</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                        <span className="text-gray-600">Pendente</span>
+                      </div>
+                      <div className="flex items-center space-x-1">
+                        <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                        <span className="text-gray-600">Atrasado</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4">
+                  <div className="space-y-3">
+                    {/* EFD */}
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">EFD - Escrituração Fiscal Digital</p>
+                          <p className="text-xs text-gray-500">Janeiro 2025 • Entregue em 15/02/2025</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs font-medium text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                          Entregue
+                        </span>
+                        <button className="text-gray-400 hover:text-gray-600">
+                          <Download className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* DCTF */}
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">DCTF - Declaração de Débitos e Créditos</p>
+                          <p className="text-xs text-gray-500">Janeiro 2025 • Vence em 15/03/2025</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs font-medium text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full">
+                          Pendente
+                        </span>
+                        <button className="text-gray-400 hover:text-gray-600">
+                          <FileText className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* REINF */}
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">REINF - Retenções e Informações</p>
+                          <p className="text-xs text-gray-500">Janeiro 2025 • Entregue em 10/02/2025</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs font-medium text-green-600 bg-green-100 px-2 py-1 rounded-full">
+                          Entregue
+                        </span>
+                        <button className="text-gray-400 hover:text-gray-600">
+                          <Download className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* DAS */}
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">DAS - Documento de Arrecadação Simples</p>
+                          <p className="text-xs text-gray-500">Janeiro 2025 • Venceu em 20/02/2025</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs font-medium text-red-600 bg-red-100 px-2 py-1 rounded-full">
+                          Atrasado
+                        </span>
+                        <button className="text-gray-400 hover:text-gray-600">
+                          <AlertTriangle className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* DEFIS */}
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">DEFIS - Declaração de Informações</p>
+                          <p className="text-xs text-gray-500">Ano 2024 • Vence em 31/03/2025</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs font-medium text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full">
+                          Pendente
+                        </span>
+                        <button className="text-gray-400 hover:text-gray-600">
+                          <FileText className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* DIRF */}
+                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">DIRF - Declaração do Imposto de Renda</p>
+                          <p className="text-xs text-gray-500">Ano 2024 • Vence em 28/02/2025</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <span className="text-xs font-medium text-yellow-600 bg-yellow-100 px-2 py-1 rounded-full">
+                          Pendente
+                        </span>
+                        <button className="text-gray-400 hover:text-gray-600">
+                          <FileText className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Relatórios & Exportações */}
+            <div className="space-y-4">
+              <h4 className="text-md font-semibold text-gray-800">Relatórios & Exportações</h4>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {/* Relatórios Gerenciais */}
+                <div className="card">
+                  <div className="p-4 border-b border-gray-100">
+                    <h5 className="text-sm font-semibold text-gray-900">Relatórios Gerenciais</h5>
+                  </div>
+                  <div className="p-4">
+                    <div className="space-y-3">
+                      <button className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                        <div className="flex items-center space-x-3">
+                          <FileText className="w-4 h-4 text-red-600" />
+                          <div className="text-left">
+                            <p className="text-sm font-medium text-gray-900">Relatório de Impostos</p>
+                            <p className="text-xs text-gray-500">Resumo mensal em PDF</p>
+                          </div>
+                        </div>
+                        <Download className="w-4 h-4 text-gray-400" />
+                      </button>
+
+                      <button className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                        <div className="flex items-center space-x-3">
+                          <BarChart3 className="w-4 h-4 text-green-600" />
+                          <div className="text-left">
+                            <p className="text-sm font-medium text-gray-900">Planilha de Impostos</p>
+                            <p className="text-xs text-gray-500">Dados detalhados em Excel</p>
+                          </div>
+                        </div>
+                        <Download className="w-4 h-4 text-gray-400" />
+                      </button>
+
+                      <button className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                        <div className="flex items-center space-x-3">
+                          <Calculator className="w-4 h-4 text-blue-600" />
+                          <div className="text-left">
+                            <p className="text-sm font-medium text-gray-900">Análise de Carga Tributária</p>
+                            <p className="text-xs text-gray-500">Comparativo anual em PDF</p>
+                          </div>
+                        </div>
+                        <Download className="w-4 h-4 text-gray-400" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Arquivos para Contador/Auditor */}
+                <div className="card">
+                  <div className="p-4 border-b border-gray-100">
+                    <h5 className="text-sm font-semibold text-gray-900">Arquivos para Contador/Auditor</h5>
+                  </div>
+                  <div className="p-4">
+                    <div className="space-y-3">
+                      <button className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                        <div className="flex items-center space-x-3">
+                          <Settings className="w-4 h-4 text-purple-600" />
+                          <div className="text-left">
+                            <p className="text-sm font-medium text-gray-900">Arquivo SPED</p>
+                            <p className="text-xs text-gray-500">Sistema Público de Escrituração</p>
+                          </div>
+                        </div>
+                        <Download className="w-4 h-4 text-gray-400" />
+                      </button>
+
+                      <button className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                        <div className="flex items-center space-x-3">
+                          <FileText className="w-4 h-4 text-orange-600" />
+                          <div className="text-left">
+                            <p className="text-sm font-medium text-gray-900">Backup Contábil</p>
+                            <p className="text-xs text-gray-500">Dados completos em ZIP</p>
+                          </div>
+                        </div>
+                        <Download className="w-4 h-4 text-gray-400" />
+                      </button>
+
+                      <button className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                        <div className="flex items-center space-x-3">
+                          <Building className="w-4 h-4 text-indigo-600" />
+                          <div className="text-left">
+                            <p className="text-sm font-medium text-gray-900">Livros Fiscais</p>
+                            <p className="text-xs text-gray-500">Registro de entradas e saídas</p>
+                          </div>
+                        </div>
+                        <Download className="w-4 h-4 text-gray-400" />
+                      </button>
+
+                      <button className="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors">
+                        <div className="flex items-center space-x-3">
+                          <CheckCircle className="w-4 h-4 text-teal-600" />
+                          <div className="text-left">
+                            <p className="text-sm font-medium text-gray-900">Relatório de Auditoria</p>
+                            <p className="text-xs text-gray-500">Conformidade fiscal em PDF</p>
+                          </div>
+                        </div>
+                        <Download className="w-4 h-4 text-gray-400" />
+                      </button>
                     </div>
                   </div>
                 </div>

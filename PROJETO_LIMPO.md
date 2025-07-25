@@ -40,7 +40,7 @@ Todas as outras páginas agora mostram uma tela simples com:
   ├── /agenda             # 🚧 Em desenvolvimento
   ├── /whatsapp           # 🚧 Em desenvolvimento
   ├── /configuracoes      # 🚧 Em desenvolvimento
-  ├── /crescimento        # 🚧 Em desenvolvimento
+  ├── /minha-empresa      # ✅ Implementado
   └── /agentes-ia         # 🚧 Em desenvolvimento
 
 /components

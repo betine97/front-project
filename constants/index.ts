@@ -32,7 +32,7 @@ export const ROUTES = {
   AGENDA: '/agenda',
   WHATSAPP: '/whatsapp',
   CONFIGURACOES: '/configuracoes',
-  CRESCIMENTO: '/crescimento',
+  MINHA_EMPRESA: '/minha-empresa',
   AGENTES_IA: '/agentes-ia',
 } as const;
 

@@ -32,7 +32,7 @@ export const Sidebar: React.FC = () => {
     {
       title: null,
       items: [
-        { name: 'Dashboard', icon: Home, path: '/', badge: null },
+        { name: 'Minha Empresa', icon: TrendingUp, path: '/minha-empresa', badge: null },
       ]
     },
     {
@@ -58,7 +58,6 @@ export const Sidebar: React.FC = () => {
       title: 'Finanças',
       items: [
         { name: 'Financeiro', icon: DollarSign, path: '/financeiro', badge: null },
-        { name: 'Plano de Crescimento', icon: TrendingUp, path: '/crescimento', badge: null },
         { name: 'Contábil', icon: FileText, path: '/contabil', badge: null },
       ]
     },

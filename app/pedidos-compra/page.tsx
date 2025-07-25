@@ -305,6 +305,154 @@ export default function PedidosCompraPage() {
           </div>
         </div>
 
+        {/* Resumo de Compras */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900">Resumo de Compras</h3>
+              <p className="text-sm text-gray-600">Casa de Ração Premium - Gestão de Pedidos</p>
+            </div>
+            <div className="flex items-center text-blue-600">
+              <ShoppingCart className="w-5 h-5" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="text-center">
+              <p className="text-2xl font-bold text-gray-900">{formatCurrency(valorTotalPedidos)}</p>
+              <p className="text-sm text-gray-600">Total em Pedidos</p>
+              <p className="text-xs text-green-600 font-medium">+8,5% vs mês anterior</p>
+            </div>
+
+            <div className="text-center">
+              <p className="text-2xl font-bold text-gray-900">{totalPedidos}</p>
+              <p className="text-sm text-gray-600">Pedidos Ativos</p>
+              <p className="text-xs text-blue-600 font-medium">{pedidosPendentes} pendentes</p>
+            </div>
+
+            <div className="text-center">
+              <p className="text-2xl font-bold text-gray-900">{fornecedores.length}</p>
+              <p className="text-sm text-gray-600">Fornecedores</p>
+              <p className="text-xs text-gray-500">Cadastrados</p>
+            </div>
+
+            <div className="text-center">
+              <p className="text-2xl font-bold text-gray-900">{allItens.length}</p>
+              <p className="text-sm text-gray-600">Itens Pedidos</p>
+              <p className="text-xs text-orange-600 font-medium">Este mês</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Informações Corporativas Expandidas */}
+        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Gestão de Compras</h3>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* Coluna 1 - Métricas de Compras */}
+            <div className="space-y-4">
+              <div>
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Métricas de Compras</h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Ticket Médio:</span>
+                    <span className="text-sm font-medium text-gray-900">{formatCurrency(valorTotalPedidos / (totalPedidos || 1))}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Prazo Médio Entrega:</span>
+                    <span className="text-sm font-medium text-gray-900">7 dias</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Taxa de Entrega:</span>
+                    <span className="text-sm font-medium text-green-600">94,2%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Economia Negociada:</span>
+                    <span className="text-sm font-medium text-blue-600">R$ 45.200</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Coluna 2 - Fornecedores */}
+            <div className="space-y-4">
+              <div>
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Fornecedores</h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Fornecedores Ativos:</span>
+                    <span className="text-sm font-medium text-gray-900">{fornecedores.length}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Novos este mês:</span>
+                    <span className="text-sm font-medium text-green-600">3</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Avaliação Média:</span>
+                    <span className="text-sm font-medium text-yellow-600">4.2/5.0</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Contratos Ativos:</span>
+                    <span className="text-sm font-medium text-gray-900">18</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Coluna 3 - Categorias de Produtos */}
+            <div className="space-y-4">
+              <div>
+                <h4 className="text-sm font-medium text-gray-700 mb-2">Categorias Principais</h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Ração Premium:</span>
+                    <span className="text-sm font-medium text-gray-900">45%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Acessórios:</span>
+                    <span className="text-sm font-medium text-gray-900">28%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Medicamentos:</span>
+                    <span className="text-sm font-medium text-gray-900">18%</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-gray-600">Outros:</span>
+                    <span className="text-sm font-medium text-gray-900">9%</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Linha adicional com informações de performance */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6 pt-6 border-t border-gray-100">
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-2">Pedidos em Atraso</h4>
+              <p className="text-2xl font-bold text-red-600">3</p>
+              <p className="text-xs text-gray-500">Requer atenção</p>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-2">Estoque Crítico</h4>
+              <p className="text-2xl font-bold text-orange-600">12</p>
+              <p className="text-xs text-gray-500">Itens abaixo do mínimo</p>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-2">Aprovações Pendentes</h4>
+              <p className="text-2xl font-bold text-blue-600">5</p>
+              <p className="text-xs text-gray-500">Aguardando aprovação</p>
+            </div>
+
+            <div>
+              <h4 className="text-sm font-medium text-gray-700 mb-2">Economia Mensal</h4>
+              <p className="text-2xl font-bold text-green-600">8,5%</p>
+              <p className="text-xs text-gray-500">vs orçamento</p>
+            </div>
+          </div>
+        </div>
+
         {/* Header com descrição */}
         <div className="mb-4">
           <p className="text-sm text-gray-600 font-medium">Gerencie seus pedidos de compra e fornecedores</p>
