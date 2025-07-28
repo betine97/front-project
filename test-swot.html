@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Componente Análise SWOT Minimalista</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold text-gray-900 mb-8">Teste do Componente Análise SWOT - Novo Design Minimalista</h1>
+        
+        <div class="mb-4 space-x-4">
+            <button onclick="openModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">
+                Abrir Modal de Perguntas
+            </button>
+            <button onclick="openSuccessModal()" class="bg-green-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-green-700 transition-colors">
+                Ver Tela de Sucesso
+            </button>
+        </div>
+        
+        <!-- Simulação do componente criado -->
+        <div class="mb-8 max-w-lg">
+            <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                <div class="flex items-center justify-between mb-3">
+                    <div class="flex items-center space-x-2">
+                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h5 class="text-sm font-semibold text-gray-800">Análise SWOT Completa</h5>
+                        <span class="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">12 perguntas • 3 min</span>
+                    </div>
+                    <button 
+                        onclick="openModal()"
+                        class="bg-gray-600 text-white px-3 py-1 rounded text-xs font-medium hover:bg-gray-700 transition-colors"
+                    >
+                        Responder
+                    </button>
+                </div>
+                <div class="flex items-start space-x-2">
+                    <svg class="w-3 h-3 text-gray-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                    </svg>
+                    <p class="text-xs text-gray-700">
+                        Responda para gerar sua análise SWOT e identificarmos as ameaças e oportunidades que giram em torno de seu negócio
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal simulado - Design minimalista com escala menor -->
+        <div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeModal()"></div>
+            <div class="relative bg-white rounded-lg shadow-xl mx-4 w-[1000px] h-[700px] overflow-hidden flex flex-col">
+                <!-- Header minimalista com botão X -->
+                <div class="flex items-center justify-between p-4 border-b border-gray-100">
+                    <div class="flex items-center space-x-2">
+                        <button class="p-1.5 hover:bg-gray-100 rounded-md transition-colors">
+                            <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                            </svg>
+                        </button>
+                        <div>
+                            <h2 class="text-base font-medium text-gray-900">Análise SWOT</h2>
+                            <p class="text-xs text-gray-500">1 de 12</p>
+                        </div>
+                    </div>
+                    
+                    <button onclick="closeModal()" class="p-1.5 hover:bg-gray-100 rounded-md transition-colors">
+                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Content com posições fixas e escala menor -->
+                <div class="flex-1 p-6">
+                    <div class="max-w-3xl mx-auto">
+                        <!-- Título fixo com tamanho menor -->
+                        <div class="mb-8">
+                            <h3 class="text-lg font-medium text-gray-900 text-center min-h-[40px] flex items-center justify-center px-4">
+                                Participação de mercado estimada (região)
+                            </h3>
+                        </div>
+                        
+                        <!-- Container de opções com altura menor -->
+                        <div class="space-y-3 max-w-2xl mx-auto">
+                            <button class="w-full px-4 py-3 text-left border border-gray-200 rounded-md hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 h-[44px] flex items-center text-sm">
+                                <div class="flex items-center justify-between w-full">
+                                    <span class="font-medium">< 5%</span>
+                                </div>
+                            </button>
+                            
+                            <button class="w-full px-4 py-3 text-left border border-orange-500 bg-orange-50 text-orange-700 rounded-md transition-all duration-200 h-[44px] flex items-center text-sm">
+                                <div class="flex items-center justify-between w-full">
+                                    <span class="font-medium">5-15%</span>
+                                    <div class="w-1.5 h-1.5 bg-orange-500 rounded-full"></div>
+                                </div>
+                            </button>
+                            
+                            <button class="w-full px-4 py-3 text-left border border-gray-200 rounded-md hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 h-[44px] flex items-center text-sm">
+                                <div class="flex items-center justify-between w-full">
+                                    <span class="font-medium">15-30%</span>
+                                </div>
+                            </button>
+                            
+                            <button class="w-full px-4 py-3 text-left border border-gray-200 rounded-md hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 h-[44px] flex items-center text-sm">
+                                <div class="flex items-center justify-between w-full">
+                                    <span class="font-medium">> 30%</span>
+                                </div>
+                            </button>
+                            
+                            <button class="w-full px-4 py-3 text-left border border-gray-200 rounded-md hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 h-[44px] flex items-center text-sm">
+                                <div class="flex items-center justify-between w-full">
+                                    <span class="font-medium">Não sei</span>
+                                </div>
+                            </button>
+                            
+                            <!-- Slot vazio para manter espaçamento -->
+                            <div class="h-[44px]"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal de Sucesso (exemplo) -->
+        <div id="successModal" class="fixed inset-0 z-50 hidden items-center justify-center">
+            <div class="absolute inset-0 bg-black/50 backdrop-blur-sm" onclick="closeSuccessModal()"></div>
+            <div class="relative bg-white rounded-lg shadow-xl mx-4 w-[1000px] h-[700px] overflow-hidden flex flex-col">
+                <!-- Header com botão X -->
+                <div class="flex items-center justify-between p-4 border-b border-gray-100">
+                    <div></div>
+                    <button onclick="closeSuccessModal()" class="p-1.5 hover:bg-gray-100 rounded-md transition-colors">
+                        <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Mensagem de sucesso centralizada -->
+                <div class="flex-1 flex items-center justify-center p-6">
+                    <div class="text-center max-w-md">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        
+                        <h3 class="text-lg font-medium text-gray-900 mb-3">
+                            Respostas salvas com sucesso!
+                        </h3>
+                        
+                        <p class="text-sm text-gray-600 leading-relaxed">
+                            Dentro de 5 minutos faremos um planejamento estratégico para sua empresa.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 1;
+        const totalQuestions = 12;
+        
+        const questions = [
+            {
+                title: "Participação de mercado estimada (região)",
+                options: ["< 5%", "5-15%", "15-30%", "> 30%", "Não sei"]
+            },
+            {
+                title: "Base de clientes ativa",
+                options: ["< 100", "100-499", "500-999", "1000-9999", "10000+"]
+            },
+            {
+                title: "Principais tipos de cliente",
+                options: ["Consumidor final (B2C)", "Lojas / revendas (B2B)", "Governo", "Misto"]
+            }
+        ];
+
+        function openModal() {
+            document.getElementById('modal').classList.remove('hidden');
+            document.getElementById('modal').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.add('hidden');
+            document.getElementById('modal').classList.remove('flex');
+            document.body.style.overflow = 'unset';
+        }
+
+        function openSuccessModal() {
+            closeModal();
+            document.getElementById('successModal').classList.remove('hidden');
+            document.getElementById('successModal').classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+            document.getElementById('successModal').classList.remove('flex');
+            document.body.style.overflow = 'unset';
+        }
+
+        // Fechar modal com ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeSuccessModal();
+            }
+        });
+    </script>
+</body>
+</html>

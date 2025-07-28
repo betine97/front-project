@@ -1,15 +1,28 @@
+'use client';
+
+import React, { useState } from 'react';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
-import { Construction } from 'lucide-react';
+import { ConversasList } from '../../components/whatsapp/ConversasList';
+import { ChatArea } from '../../components/whatsapp/ChatArea';
+import { InsightsPanel } from '../../components/whatsapp/InsightsPanel';
 
 export default function WhatsAppPage() {
+  const [conversaSelecionada, setConversaSelecionada] = useState<string | null>('1');
+
   return (
     <DashboardLayout>
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center space-y-4">
-          <Construction size={64} className="mx-auto text-orange-500" />
-          <h1 className="text-2xl font-bold text-gray-900">Módulo WhatsApp</h1>
-          <p className="text-gray-600">Esta página está sendo desenvolvida</p>
-        </div>
+      <div className="flex bg-gray-50 flex-1 overflow-hidden">
+        {/* Lista de Conversas */}
+        <ConversasList 
+          conversaSelecionada={conversaSelecionada}
+          onSelecionarConversa={setConversaSelecionada}
+        />
+        
+        {/* Área do Chat */}
+        <ChatArea conversaSelecionada={conversaSelecionada} />
+        
+        {/* Painel de Insights */}
+        <InsightsPanel conversaSelecionada={conversaSelecionada} />
       </div>
     </DashboardLayout>
   );

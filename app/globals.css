@@ -312,3 +312,28 @@ Scrollbar customization */
 .scrollbar-minimal::-webkit-scrollbar-thumb:hover {
   background: #d1d5db;
 }
+
+/* Scrollbar Insights - Fina e Minimalista */
+.scrollbar-insights::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scrollbar-insights::-webkit-scrollbar-track {
+  background: #f9fafb;
+  border-radius: 3px;
+}
+
+.scrollbar-insights::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 3px;
+}
+
+.scrollbar-insights::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+.scrollbar-insights {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db #f9fafb;
+}
+

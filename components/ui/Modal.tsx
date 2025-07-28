@@ -43,7 +43,7 @@ export function Modal({
   const sizeClasses = {
     sm: 'w-[400px] h-[300px]',
     md: 'w-[1000px] h-[600px]',
-    lg: 'w-[800px] h-[500px]',
+    lg: 'w-[1000px] h-[700px]',
     xl: 'w-[1200px] h-[700px]',
   };
 

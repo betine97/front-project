@@ -133,7 +133,7 @@ export const Sidebar: React.FC = () => {
 
                             {/* Badge - sempre visível quando existe */}
                             {item.badge && (
-                              <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-[10px] w-4 h-4 inline-flex items-center justify-center font-bold rounded-full">
+                              <span className="absolute -top-0.5 -right-0.5 bg-orange-500 text-white text-[10px] w-4 h-4 inline-flex items-center justify-center font-bold rounded-full">
                                 {item.badge}
                               </span>
                             )}
@@ -166,7 +166,7 @@ export const Sidebar: React.FC = () => {
 
                           {/* Badge - sempre visível quando existe */}
                           {item.badge && (
-                            <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-[10px] w-4 h-4 inline-flex items-center justify-center font-bold rounded-full">
+                            <span className="absolute -top-0.5 -right-0.5 bg-orange-500 text-white text-[10px] w-4 h-4 inline-flex items-center justify-center font-bold rounded-full">
                               {item.badge}
                             </span>
                           )}
