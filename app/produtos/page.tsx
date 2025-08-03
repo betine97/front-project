@@ -1,45 +1,58 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Package, Plus, ShoppingCart, PieChart, BarChart3, Expand } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Package, Plus, ShoppingCart } from 'lucide-react';
+import { useAuthCheck } from '../../hooks/useAuthCheck';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
-import { ProductModal } from '../../components/produtos/ProductModal';
-import { NewOrderModal } from '../../components/produtos/NewOrderModal';
-import { TreeViewSubcategorias } from '../../components/produtos/TreeViewSubcategorias';
-import { DistribuicaoMarcasProdutos } from '../../components/produtos/DistribuicaoMarcasProdutos';
-import { DistribuicaoCategoriasProdutos } from '../../components/produtos/DistribuicaoCategoriasProdutos';
-import { MarcasPorCategoria } from '../../components/produtos/MarcasPorCategoria';
-import { HistoricoPrecosModal } from '../../components/produtos/HistoricoPrecosModal';
 import { ProdutoCard } from '../../components/produtos/ProdutoCard';
 import { ProdutoTable } from '../../components/produtos/ProdutoTable';
-import { ProdutoStats } from '../../components/produtos/ProdutoStats';
 import { ProdutoFilters } from '../../components/produtos/ProdutoFilters';
-import { ProdutoDetailModal } from '../../components/produtos/ProdutoDetailModal';
 import { Pagination } from '../../components/produtos/Pagination';
-import { CardOne } from '../../components/produtos/CardOne';
-import { CardTwo } from '../../components/produtos/CardTwo';
-import { CardThree } from '../../components/produtos/CardThree';
-import { CardFour } from '../../components/produtos/CardFour';
+// Imports temporariamente comentados para debug
+// import { CardOne } from '../../components/produtos/CardOne';
+// import { CardTwo } from '../../components/produtos/CardTwo';
+// import { CardThree } from '../../components/produtos/CardThree';
+// import { CardFour } from '../../components/produtos/CardFour';
+import { NovoProdutoModal } from '../../components/produtos/NovoProdutoModal';
 import { useProdutos } from '../../hooks/useProdutos';
-import { useHistoricoPrecos } from '../../hooks/useHistoricoPrecos';
 import { Produto } from '../../types/entities';
-import { debounce } from '../../lib/utils/index';
-import { MESSAGES } from '../../constants/index';
-import { formatCurrency } from '../../lib/utils';
+import { LoadingState } from '../../types/common';
+// import { HistoricoPrecosModal } from '@/components/produtos/HistoricoPrecosModal';
+import { MESSAGES } from '@/constants/index';
+import { ProdutosDebug } from '@/components/debug/ProdutosDebug';
+
+// Imports mantidos para funcionalidades futuras (não utilizados atualmente mas preservados)
+// import { ProductModal } from '../../components/produtos/ProductModal';
+// import { NewOrderModal } from '../../components/produtos/NewOrderModal';
+// import { TreeViewSubcategorias } from '../../components/produtos/TreeViewSubcategorias';
+// import { DistribuicaoMarcasProdutos } from '../../components/produtos/DistribuicaoMarcasProdutos';
+// import { DistribuicaoCategoriasProdutos } from '../../components/produtos/DistribuicaoCategoriasProdutos';
+// import { MarcasPorCategoria } from '../../components/produtos/MarcasPorCategoria';
+// import { ProdutoStats } from '../../components/produtos/ProdutoStats';
+// import { ProdutoDetailModal } from '../../components/produtos/ProdutoDetailModal';
+// import { useHistoricoPrecos } from '../../hooks/useHistoricoPrecos';
+// import { debounce } from '../../lib/utils/index';
+// import { MESSAGES } from '../../constants/index';
+
 
 export default function ProdutosPage() {
+  // Verificação de autenticação
+  const { isAuthenticated, requireAuth } = useAuthCheck();
+
   // Estados locais para UI
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const [selectedMarca, setSelectedMarca] = useState('');
   const [selectedPublicoAlvo, setSelectedPublicoAlvo] = useState('');
+  // Estados para filtros avançados (preservados para funcionalidades futuras)
   const [selectedVariacao, setSelectedVariacao] = useState('');
   const [selectedValorTipo, setSelectedValorTipo] = useState('');
-  const [selectedStatus, setSelectedStatus] = useState('');
-  const [selectedDestinadoPara, setSelectedDestinadoPara] = useState('');
-  const [codigoBarras, setCodigoBarras] = useState('');
-  const [sortBy, setSortBy] = useState('nome');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [selectedStatus, setSelectedStatus] = useState(''); // Para filtro por status
+  const [selectedDestinadoPara, setSelectedDestinadoPara] = useState(''); // Para filtro por público-alvo
+  const [codigoBarras, setCodigoBarras] = useState(''); // Para busca por código de barras
+  const [sortBy, setSortBy] = useState('nome'); // Para ordenação
+
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   const [showModal, setShowModal] = useState(false);
   const [showOrderModal, setShowOrderModal] = useState(false);
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -69,18 +82,41 @@ export default function ProdutosPage() {
     marca: selectedMarca
   });
 
+  // Prevenir warnings do TypeScript sobre variáveis não utilizadas
+  void selectedStatus;
+  void setSelectedStatus;
+  void selectedDestinadoPara;
+  void setSelectedDestinadoPara;
+  void codigoBarras;
+  void setCodigoBarras;
+  void sortBy;
+  void setSortBy;
+  void editingProduct;
+  void updateProduto;
+
   // Produtos para listagem (vem paginado do backend)
-  const produtos = allProdutos;
-  
+  const produtos = allProdutos || [];
+
+  // Usar apenas dados reais da API
+  const produtosParaExibir = produtos;
+
+  // Verificar autenticação
+  useEffect(() => {
+    if (isAuthenticated === false) {
+      requireAuth();
+    }
+  }, [isAuthenticated, requireAuth]);
+
   // Debug temporário
   console.log('Debug - Loading:', loading);
   console.log('Debug - Error:', error);
   console.log('Debug - Produtos:', produtos);
   console.log('Debug - Total:', total);
+  console.log('Debug - Authenticated:', isAuthenticated);
 
   // Para gráficos, vamos usar os mesmos produtos por enquanto
   // TODO: Implementar hook separado para gráficos sem paginação
-  const produtosParaGraficos = allProdutos;
+  const produtosParaGraficos = produtosParaExibir;
 
   // Busca em tempo real sem debounce
   const handleSearchChange = (value: string) => {
@@ -94,10 +130,10 @@ export default function ProdutosPage() {
   };
 
   // Categorias, marcas, públicos-alvo e variações únicas dos produtos
-  const categories = Array.from(new Set(allProdutos.map(p => p.categoria))).filter(Boolean);
-  const marcas = Array.from(new Set(allProdutos.map(p => p.marca))).filter(Boolean);
-  const publicosAlvo = Array.from(new Set(allProdutos.map(p => p.destinado_para))).filter(Boolean);
-  const variacoes = Array.from(new Set(allProdutos.map(p => p.variacao))).filter(Boolean);
+  const categories = Array.from(new Set(produtosParaExibir.map(p => p.categoria))).filter(Boolean);
+  const marcas = Array.from(new Set(produtosParaExibir.map(p => p.marca))).filter(Boolean);
+  const publicosAlvo = Array.from(new Set(produtosParaExibir.map(p => p.destinado_para))).filter(Boolean);
+  const variacoes = Array.from(new Set(produtosParaExibir.map(p => p.variacao))).filter(Boolean);
 
   // Handlers
   const handleCreateProduct = () => {
@@ -113,24 +149,51 @@ export default function ProdutosPage() {
   const handleDeleteProduct = async (id: number) => {
     if (confirm(MESSAGES.CONFIRM.DELETE)) {
       try {
-        await deleteProduto(id);
+        const result = await deleteProduto(id);
+        console.log('Produto excluído:', result.message);
       } catch (error) {
         console.error('Erro ao excluir produto:', error);
       }
     }
   };
 
-  const handleSaveProduct = async (produtoData: Omit<Produto, 'id'>) => {
+  // Handler para salvar produto
+  const handleSaveProduct = async (produtoData: {
+    data_cadastro: string;
+    codigo_barra: string;
+    nome_produto: string;
+    sku: string;
+    categoria: string;
+    destinado_para: string;
+    variacao: string;
+    marca: string;
+    descricao: string;
+    status: string;
+    preco_venda: number;
+    id_fornecedor: number;
+  }) => {
     try {
       if (editingProduct) {
-        await updateProduto(editingProduct.id, produtoData);
+        // Editar produto existente - converter dados para o tipo correto
+        const produtoParaEdicao = {
+          ...produtoData,
+          status: produtoData.status as 'ativo' | 'inativo' // Cast para o tipo correto
+        };
+        console.log('Editando produto:', editingProduct.id, produtoParaEdicao);
+        const result = await updateProduto(editingProduct.id, produtoParaEdicao);
+        console.log('Produto atualizado:', result);
       } else {
-        await createProduto(produtoData);
+        // Criar novo produto
+        console.log('Criando novo produto:', produtoData);
+        const result = await createProduto(produtoData);
+        console.log('Produto criado:', result.message);
       }
-      setShowModal(false);
+
+      // Limpar estado de edição
       setEditingProduct(null);
     } catch (error) {
       console.error('Erro ao salvar produto:', error);
+      throw error;
     }
   };
 
@@ -148,13 +211,20 @@ export default function ProdutosPage() {
     setShowHistoricoModal(true);
   };
 
+  // Prevenir warnings sobre funções não utilizadas
+  void handleViewProduct;
+  void handleSaveOrder;
+  void handleViewHistorico;
+
+
+
   const handleCloseHistorico = () => {
     setShowHistoricoModal(false);
     setProdutoHistorico(null);
   };
 
-  // Loading state
-  if (loading === 'loading') {
+  // Loading state (incluindo verificação de autenticação)
+  if (isAuthenticated === null || loading === ('loading' as LoadingState)) {
     return (
       <DashboardLayout>
         <div className="p-6">
@@ -177,15 +247,29 @@ export default function ProdutosPage() {
     return (
       <DashboardLayout>
         <div className="p-6">
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="text-red-800">{error}</p>
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+            <h3 className="text-lg font-semibold text-red-800 mb-2">Erro ao carregar produtos</h3>
+            <p className="text-red-800 mb-4">{error}</p>
             <button
               onClick={refetch}
-              className="mt-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700"
+              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 mr-2"
             >
               Tentar novamente
             </button>
           </div>
+
+          {/* Debug Info */}
+          {process.env.NODE_ENV === 'development' && (
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <h4 className="text-sm font-semibold text-yellow-800 mb-2">Debug Info:</h4>
+              <div className="text-xs text-yellow-700 space-y-1">
+                <p>• Endpoint: http://localhost:8080/api/produtos</p>
+                <p>• Token presente: {localStorage.getItem('auth_token') ? 'Sim' : 'Não'}</p>
+                <p>• Erro: {error}</p>
+                <p>• Verifique o console do navegador para mais detalhes</p>
+              </div>
+            </div>
+          )}
         </div>
       </DashboardLayout>
     );
@@ -193,7 +277,7 @@ export default function ProdutosPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-6 max-w-full overflow-x-hidden">
+      <div className="p-6 max-w-full overflow-x-hidden flex-1 flex flex-col">
         {/* Stats Cards - Estilo ClickUp/Itaú */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           <div className="card-metric-modern min-h-[80px]">
@@ -215,7 +299,7 @@ export default function ProdutosPage() {
                 </svg>
               </div>
               <div>
-                <p className="text-lg font-bold text-gray-900">{Array.from(new Set(produtosParaGraficos.map(p => p.marca))).length} Marcas no Total</p>
+                <p className="text-lg font-bold text-gray-900">{Array.from(new Set(produtosParaGraficos.map(p => p.marca).filter(Boolean))).length} Marcas no Total</p>
               </div>
             </div>
           </div>
@@ -228,7 +312,7 @@ export default function ProdutosPage() {
                 </svg>
               </div>
               <div>
-                <p className="text-lg font-bold text-gray-900">{Array.from(new Set(produtosParaGraficos.map(p => p.categoria))).length} Categorias Atendidas</p>
+                <p className="text-lg font-bold text-gray-900">{Array.from(new Set(produtosParaGraficos.map(p => p.categoria).filter(Boolean))).length} Categorias Atendidas</p>
               </div>
             </div>
           </div>
@@ -241,7 +325,7 @@ export default function ProdutosPage() {
                 </svg>
               </div>
               <div>
-                <p className="text-lg font-bold text-gray-900">{Array.from(new Set(produtosParaGraficos.map(p => p.destinado_para))).length} Públicos-Alvos</p>
+                <p className="text-lg font-bold text-gray-900">{Array.from(new Set(produtosParaGraficos.map(p => p.destinado_para).filter(Boolean))).length} Públicos-Alvos</p>
               </div>
             </div>
           </div>
@@ -254,6 +338,44 @@ export default function ProdutosPage() {
             <p className="text-sm text-gray-500">Insights sobre distribuição, performance e margem dos seus produtos por marca, categoria e público-alvo.</p>
           </div>
           <div className="flex items-center space-x-3">
+            {/* Botão de debug - apenas em desenvolvimento */}
+            {process.env.NODE_ENV === 'development' && (
+              <div className="flex items-center space-x-2">
+                <div className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${loading === ('loading' as LoadingState) ? 'bg-blue-100 text-blue-800' :
+                  error ? 'bg-red-100 text-red-800' :
+                    produtosParaExibir.length > 0 ? 'bg-green-100 text-green-800' :
+                      'bg-gray-100 text-gray-800'
+                  }`}>
+                  <div className={`w-2 h-2 rounded-full mr-2 ${loading === ('loading' as LoadingState) ? 'bg-blue-400 animate-pulse' :
+                    error ? 'bg-red-400' :
+                      produtosParaExibir.length > 0 ? 'bg-green-400' :
+                        'bg-gray-400'
+                    }`} />
+                  {loading === ('loading' as LoadingState) ? 'Carregando...' :
+                    error ? 'API Error' :
+                      produtosParaExibir.length > 0 ? `${produtosParaExibir.length} produtos` :
+                        'Sem dados'}
+                </div>
+                <button
+                  onClick={() => {
+                    console.log('=== DEBUG PRODUTOS ===');
+                    console.log('Loading:', loading);
+                    console.log('Error:', error);
+                    console.log('AllProdutos:', allProdutos);
+                    console.log('Produtos:', produtos);
+                    console.log('ProdutosParaExibir:', produtosParaExibir);
+                    console.log('Token:', localStorage.getItem('auth_token'));
+                    refetch();
+                  }}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white text-sm px-3 py-2 rounded-lg flex items-center space-x-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  <span>Debug API</span>
+                </button>
+              </div>
+            )}
             <button
               onClick={() => setShowOrderModal(true)}
               className="btn-secondary flex items-center space-x-2 text-sm px-4 py-2"
@@ -282,24 +404,13 @@ export default function ProdutosPage() {
 
 
 
-        {/* Seção de Cards Personalizados */}
+        {/* Seção de Cards Personalizados - Temporariamente desabilitada para debug */}
         <div className="mb-12">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Coluna 1 - Card One e Card Four */}
-            <div className="lg:col-span-1 space-y-6">
-              <CardOne />
-              <CardFour />
-            </div>
-            
-            {/* Coluna 2 - Card Two */}
-            <div className="lg:col-span-1">
-              <CardTwo />
-            </div>
-            
-            {/* Coluna 3 - Card Three */}
-            <div className="lg:col-span-1">
-              <CardThree />
-            </div>
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <p className="text-yellow-800 text-sm">
+              Cards temporariamente desabilitados para debug.
+              Se a página carregar, o problema está nos componentes Card.
+            </p>
           </div>
         </div>
 
@@ -312,7 +423,7 @@ export default function ProdutosPage() {
         </div>
 
         {/* Products Grid - Estilo Itaú */}
-        <div className="card">
+        <div className="card flex-1 flex flex-col">
           {/* Filtros usando o componente ProdutoFilters */}
           <ProdutoFilters
             searchTerm={searchTerm}
@@ -334,129 +445,114 @@ export default function ProdutosPage() {
             marcas={marcas}
             publicosAlvo={publicosAlvo}
             variacoes={variacoes}
-            totalProdutos={produtos.length}
+            totalProdutos={produtosParaExibir.length}
           />
 
           {/* Produtos Grid/List */}
-          {produtos.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="icon-container orange mx-auto mb-4" style={{ width: '64px', height: '64px' }}>
-                <Package className="w-8 h-8" />
+          <div className="flex-1 flex flex-col">
+            {loading === ('loading' as LoadingState) ? (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+                  <p className="text-gray-500">Carregando produtos...</p>
+                </div>
               </div>
-              <h4 className="text-lg font-semibold text-gray-900 mb-2">Nenhum produto encontrado</h4>
-              <p className="text-gray-500 mb-6 max-w-md mx-auto">Tente ajustar os filtros ou adicione novos produtos ao seu catálogo</p>
-              <button
-                onClick={handleCreateProduct}
-                className="btn-primary flex items-center space-x-2 mx-auto"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Adicionar Produto</span>
-              </button>
-            </div>
-          ) : viewMode === 'grid' ? (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {produtos.map(produto => (
-                  <ProdutoCard
-                    key={produto.id}
-                    produto={produto}
+            ) : produtosParaExibir.length === 0 ? (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="icon-container orange mx-auto mb-4" style={{ width: '64px', height: '64px' }}>
+                    <Package className="w-8 h-8" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-gray-900 mb-2">Nenhum produto encontrado</h4>
+                  <p className="text-gray-500 mb-6 max-w-md mx-auto">
+                    {error ? 'Erro ao carregar produtos da API. Verifique sua conexão.' : 'Tente ajustar os filtros ou adicione novos produtos ao seu catálogo'}
+                  </p>
+                  <div className="flex gap-3 justify-center">
+                    {error && (
+                      <button
+                        onClick={refetch}
+                        className="btn-secondary flex items-center space-x-2"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                        </svg>
+                        <span>Tentar Novamente</span>
+                      </button>
+                    )}
+                    <button
+                      onClick={handleCreateProduct}
+                      className="btn-primary flex items-center space-x-2"
+                    >
+                      <Plus className="w-4 h-4" />
+                      <span>Adicionar Produto</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ) : viewMode === 'grid' ? (
+              <div className="flex-1 flex flex-col">
+                <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 content-start">
+                  {produtosParaExibir.map(produto => (
+                    <ProdutoCard
+                      key={produto.id}
+                      produto={produto}
+                      onEdit={handleEditProduct}
+                      onDelete={handleDeleteProduct}
+                    />
+                  ))}
+                </div>
+
+                {/* Paginação */}
+                {produtosParaExibir.length > 0 && totalPages > 1 && (
+                  <div className="border-t border-gray-200 p-4">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      totalItems={total}
+                      itemsPerPage={itemsPerPage}
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex-1 flex flex-col">
+                <div className="flex-1 overflow-auto">
+                  <ProdutoTable
+                    produtos={produtosParaExibir}
                     onEdit={handleEditProduct}
                     onDelete={handleDeleteProduct}
                   />
-                ))}
+                </div>
+
+                {/* Paginação para tabela */}
+                {produtosParaExibir.length > 0 && totalPages > 1 && (
+                  <div className="border-t border-gray-200 p-4">
+                    <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      totalItems={total}
+                      itemsPerPage={itemsPerPage}
+                      onPageChange={handlePageChange}
+                    />
+                  </div>
+                )}
               </div>
-
-              {/* Paginação */}
-              {produtos.length > 0 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  totalItems={total}
-                  itemsPerPage={itemsPerPage}
-                  onPageChange={handlePageChange}
-                />
-              )}
-            </>
-          ) : (
-            <>
-              <ProdutoTable
-                produtos={produtos}
-                onEdit={handleEditProduct}
-                onDelete={handleDeleteProduct}
-              />
-
-              {/* Paginação para tabela */}
-              {produtos.length > 0 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  totalItems={total}
-                  itemsPerPage={itemsPerPage}
-                  onPageChange={handlePageChange}
-                />
-              )}
-            </>
-          )}
+            )
+            }
+          </div>
         </div>
 
-        {/* Modals */}
-        {
-          showModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-gray-100">
-                <div className="flex items-center justify-between p-6 border-b border-gray-100">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 bg-gradient-to-br from-orange-100 to-orange-200 rounded-lg flex items-center justify-center">
-                      <Package className="w-4 h-4 text-orange-600" />
-                    </div>
-                    <h2 className="text-xl font-semibold text-gray-900">
-                      {editingProduct ? 'Editar Produto' : 'Novo Produto'}
-                    </h2>
-                  </div>
-                  <button
-                    onClick={() => setShowModal(false)}
-                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-colors"
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-                <div className="p-6">
-                  <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 mb-6">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-orange-100 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h4 className="font-medium text-orange-900">Em desenvolvimento</h4>
-                        <p className="text-sm text-orange-700">
-                          Modal de {editingProduct ? 'edição' : 'criação'} de produto será implementado em breve.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex space-x-3">
-                    <button
-                      onClick={() => setShowModal(false)}
-                      className="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium px-4 py-3 rounded-xl transition-colors duration-200"
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      onClick={() => setShowModal(false)}
-                      className="flex-1 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-medium px-4 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
-                    >
-                      Salvar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )
-        }
+        {/* Modal de Novo Produto */}
+        <NovoProdutoModal
+          isOpen={showModal}
+          onClose={() => {
+            setShowModal(false);
+            setEditingProduct(null); // Limpar produto sendo editado
+          }}
+          onSave={handleSaveProduct}
+          editingProduct={editingProduct}
+        />
 
         {
           showOrderModal && (
@@ -630,15 +726,26 @@ export default function ProdutosPage() {
         }
 
         {/* Modal de Histórico de Preços */}
+        {/* Modal temporariamente desabilitado para debug */}
         {
-          produtoHistorico && (
-            <HistoricoPrecosModal
-              produto={produtoHistorico}
-              isOpen={showHistoricoModal}
-              onClose={handleCloseHistorico}
-            />
+          produtoHistorico && showHistoricoModal && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg p-6 max-w-md">
+                <h3 className="text-lg font-semibold mb-4">Histórico de Preços</h3>
+                <p className="text-gray-600 mb-4">Modal temporariamente simplificado para debug.</p>
+                <button
+                  onClick={handleCloseHistorico}
+                  className="bg-gray-500 text-white px-4 py-2 rounded"
+                >
+                  Fechar
+                </button>
+              </div>
+            </div>
           )
         }
+
+        {/* Debug Component - apenas em desenvolvimento */}
+        {process.env.NODE_ENV === 'development' && <ProdutosDebug />}
       </div>
     </DashboardLayout>
   )

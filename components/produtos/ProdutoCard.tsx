@@ -12,9 +12,9 @@ interface ProdutoCardProps {
 }
 
 export function ProdutoCard({ produto, onEdit, onDelete }: ProdutoCardProps) {
-  // Calculando margem exemplo (assumindo 30% de margem)
-  const margemPercentual = 30;
-  const precoCMV = produto.preco_venda * (1 - margemPercentual / 100);
+  // CMV e Margem ficam vazios até que tenhamos dados de custo de outro endpoint
+  const precoCMV = null; // Será preenchido quando houver endpoint de custo
+  const margemPercentual = null; // Será calculado quando houver dados de custo
 
   return (
     <div className="bg-white rounded-lg border border-gray-200 p-3 hover:shadow-md transition-shadow duration-200">
@@ -61,11 +61,15 @@ export function ProdutoCard({ produto, onEdit, onDelete }: ProdutoCardProps) {
       <div className="grid grid-cols-3 gap-2 mb-3">
         <div className="bg-gray-50 rounded-lg p-2">
           <p className="text-xs text-gray-400 mb-1 text-center">CMV</p>
-          <p className="text-sm font-bold text-gray-900 text-center">{formatCurrency(precoCMV)}</p>
+          <p className="text-sm font-bold text-gray-900 text-center">
+            {precoCMV ? formatCurrency(precoCMV) : '-'}
+          </p>
         </div>
         <div className="bg-gray-50 rounded-lg p-2">
-          <p className="text-xs text-gray-400 mb-1 text-center">Margem</p>
-          <p className="text-sm font-bold text-gray-900 text-center">{margemPercentual}%</p>
+          <p className="text-xs text-gray-400 mb-1 text-center">Margem Bruta</p>
+          <p className="text-sm font-bold text-gray-900 text-center">
+            {margemPercentual ? `${margemPercentual}%` : '-'}
+          </p>
         </div>
         <div className="bg-gray-50 rounded-lg p-2">
           <p className="text-xs text-gray-400 mb-1 text-center">Venda</p>

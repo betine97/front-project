@@ -39,6 +39,7 @@ export interface Produto {
   descricao: string;
   status: 'ativo' | 'inativo';
   preco_venda: number;
+  id_fornecedor: number;
 }
 
 export interface Fornecedor {

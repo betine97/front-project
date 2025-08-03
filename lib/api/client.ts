@@ -4,7 +4,7 @@ import { ApiResponse, ApiError } from '@/types/api';
 class ApiClient {
   private baseURL: string;
 
-  constructor(baseURL: string = 'http://localhost:8080/api') {
+  constructor(baseURL: string = 'http://localhost:8080') {
     this.baseURL = baseURL;
   }
 
@@ -14,22 +14,64 @@ class ApiClient {
   ): Promise<ApiResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
 
+    // Obter token do localStorage
+    const token = localStorage.getItem('auth_token');
+    
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` }),
         ...options.headers,
       },
       ...options,
     };
 
+    console.log(`[API] ${options.method || 'GET'} ${url}`, {
+      headers: config.headers,
+      hasToken: !!token
+    });
+
     try {
       const response = await fetch(url, config);
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        // Se for erro 401 (não autorizado), limpar token e redirecionar para login
+        if (response.status === 401) {
+          localStorage.removeItem('auth_token');
+          window.location.href = '/login';
+          throw new Error('Token inválido ou expirado. Faça login novamente.');
+        }
+        
+        // Tentar capturar a mensagem de erro do backend
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        let errorData = {};
+        
+        try {
+          errorData = await response.json();
+          console.log('[API] Error data from backend:', errorData);
+          
+          if ((errorData as any)?.error) {
+            errorMessage = (errorData as any).error;
+          } else if ((errorData as any)?.message) {
+            errorMessage = (errorData as any).message;
+          }
+        } catch (parseError) {
+          console.log('[API] Could not parse error response as JSON');
+        }
+        
+        // Criar erro com informações completas
+        const error = new Error(errorMessage) as any;
+        error.response = {
+          status: response.status,
+          data: errorData
+        };
+        
+        throw error;
       }
 
       const data = await response.json();
+      
+      console.log(`[API] Response:`, data);
 
       // A API retorna dados diretamente, então vamos envolver em um formato padrão
       return {
@@ -37,6 +79,7 @@ class ApiClient {
         success: true
       };
     } catch (error) {
+      console.error(`[API] Error:`, error);
       throw this.handleError(error);
     }
   }

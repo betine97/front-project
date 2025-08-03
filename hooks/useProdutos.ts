@@ -25,25 +25,51 @@ export function useProdutos(params: UseProdutosParams = {}) {
     setError(null);
 
     try {
+      console.log('[useProdutos] Iniciando busca de produtos com params:', params);
       const response = await produtosService.getAll(params);
-      setProdutos(response.data);
+      
+      console.log('[useProdutos] Resposta recebida:', response);
+      
+      setProdutos(response.data || []);
       if (response.allData) {
         setAllProdutos(response.allData);
+      } else {
+        setAllProdutos(response.data || []);
       }
-      setTotal(response.total);
-      setTotalPages(response.totalPages);
+      setTotal(response.total || 0);
+      setTotalPages(response.totalPages || 0);
       setLoading('success');
     } catch (err) {
+      console.error('[useProdutos] Erro ao buscar produtos:', err);
       setError(err instanceof Error ? err.message : 'Erro ao carregar produtos');
       setLoading('error');
+      
+      // Definir valores padrão em caso de erro
+      setProdutos([]);
+      setAllProdutos([]);
+      setTotal(0);
+      setTotalPages(0);
     }
   };
 
-  const createProduto = async (produto: Omit<Produto, 'id'>) => {
+  const createProduto = async (produto: {
+    data_cadastro: string;
+    codigo_barra: string;
+    nome_produto: string;
+    sku: string;
+    categoria: string;
+    destinado_para: string;
+    variacao: string;
+    marca: string;
+    descricao: string;
+    status: string;
+    preco_venda: number;
+  }) => {
     try {
-      const novoProduto = await produtosService.create(produto);
-      setProdutos(prev => [novoProduto, ...prev]);
-      return novoProduto;
+      const result = await produtosService.create(produto);
+      // Recarregar a lista após criar
+      await fetchProdutos();
+      return result;
     } catch (err) {
       throw err;
     }
@@ -63,8 +89,10 @@ export function useProdutos(params: UseProdutosParams = {}) {
 
   const deleteProduto = async (id: number) => {
     try {
-      await produtosService.delete(id);
-      setProdutos(prev => prev.filter(p => p.id !== id));
+      const result = await produtosService.delete(id);
+      // Recarregar a lista após deletar
+      await fetchProdutos();
+      return result;
     } catch (err) {
       throw err;
     }
