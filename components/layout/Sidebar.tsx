@@ -49,7 +49,7 @@ export const Sidebar: React.FC = () => {
       title: 'Operacional',
       items: [
         { name: 'Produtos', icon: Package, path: '/produtos', badge: null },
-        { name: 'Pedidos', icon: ClipboardList, path: '/pedidos-compra', badge: null },
+        { name: 'Pedidos', icon: ClipboardList, path: '/pedidos', badge: null },
         { name: 'Fornecedores', icon: Truck, path: '/fornecedores', badge: null },
         { name: 'Estoque', icon: Package, path: '/estoque', badge: null },
       ]

@@ -168,7 +168,7 @@ export class FornecedoresService {
   }
 
   async updateStatus(id: number): Promise<{message: string}> {
-    const response = await apiClient.put<{message: string}>(`/api/fornecedores/changestatus/${id}`);
+    const response = await apiClient.put<{message: string}>(`/api/fornecedores/changestatus/${id}`, {});
     return response.data;
   }
 

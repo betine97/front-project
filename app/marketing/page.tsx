@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { DashboardLayout } from '../../components/layout/DashboardLayout';
 import { CampanhasMarketing } from '../../components/marketing/CampanhasMarketing';
+import { DebugAPI } from '../../components/marketing/DebugAPI';
 import { Campanha } from '../../types/entities';
 import { MESSAGES } from '../../constants/index';
 import { formatCurrency } from '../../lib/utils';
@@ -402,6 +403,11 @@ export default function MarketingPage() {
               <span>Nova Campanha</span>
             </button>
           </div>
+        </div>
+
+        {/* Debug API - Remover em produção */}
+        <div className="mb-6">
+          <DebugAPI />
         </div>
 
         {/* Grid de Campanhas */}

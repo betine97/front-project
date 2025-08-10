@@ -1,109 +1,145 @@
-// Hook customizado para gerenciar estoque
 import { useState, useEffect } from 'react';
-import { estoqueService } from '@/lib/services/estoque.service';
-import { Estoque } from '@/types/entities';
-import { LoadingState } from '@/types/common';
+import { apiClient } from '@/lib/api/client';
+
+interface ItemEstoque {
+  nome_produto: string;
+  lote: number;
+  quantidade: number;
+  data_entrada: string;
+  data_saida?: string;
+  vencimento: string;
+  documento_referencia: string;
+  status: string;
+}
+
+interface EstoqueResponse {
+  estoque: ItemEstoque[];
+  total: number;
+  page: number;
+  limit: number;
+  total_pages: number;
+}
 
 interface UseEstoqueParams {
   page?: number;
   limit?: number;
   search?: string;
   status?: string;
-  produto?: string;
 }
 
 export function useEstoque(params: UseEstoqueParams = {}) {
-  const [estoque, setEstoque] = useState<Estoque[]>([]);
-  const [loading, setLoading] = useState<LoadingState>('idle');
+  const [itensEstoque, setItensEstoque] = useState<ItemEstoque[]>([]);
+  const [loading, setLoading] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [error, setError] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
   const fetchEstoque = async () => {
-    setLoading('loading');
-    setError(null);
-
     try {
-      const response = await estoqueService.getAll(params);
-      setEstoque(response.data);
-      setTotal(response.total);
-      setTotalPages(response.totalPages);
+      setLoading('loading');
+      setError(null);
+
+      // Construir query string
+      const queryParams = new URLSearchParams();
+      if (params.page) queryParams.append('page', params.page.toString());
+      if (params.limit) queryParams.append('limit', params.limit.toString());
+      if (params.search) queryParams.append('search', params.search);
+      if (params.status) queryParams.append('status', params.status);
+
+      const endpoint = queryParams.toString() 
+        ? `/api/estoque?${queryParams.toString()}`
+        : '/api/estoque';
+
+      console.log('[useEstoque] Fazendo requisição para:', endpoint);
+
+      const response = await apiClient.get<EstoqueResponse>(endpoint);
+      
+      console.log('[useEstoque] Resposta recebida:', response.data);
+
+      // Extrair dados da resposta com a nova estrutura
+      const estoque = response.data.estoque.map((item: any) => ({
+        nome_produto: item.nome_produto || '',
+        lote: item.lote || 0,
+        quantidade: item.quantidade || 0,
+        data_entrada: item.data_entrada || '',
+        data_saida: item.data_saida || null,
+        vencimento: item.vencimento || '',
+        documento_referencia: item.documento_referencia || '',
+        status: item.status || 'ativo'
+      }));
+      
+      setItensEstoque(estoque);
+      setTotal(response.data.total);
+      setTotalPages(response.data.total_pages);
       setLoading('success');
     } catch (err) {
+      console.error('[useEstoque] Erro ao buscar estoque:', err);
       setError(err instanceof Error ? err.message : 'Erro ao carregar estoque');
+      setItensEstoque([]);
+      setTotal(0);
+      setTotalPages(0);
       setLoading('error');
     }
   };
 
-  const createEstoque = async (estoque: Omit<Estoque, 'id'>) => {
+  const createItemEstoque = async (itemData: {
+    id_produto: number;
+    id_lote: number;
+    quantidade: number;
+    vencimento: string;
+    custo_unitario: number;
+    data_entrada: string;
+    data_saida: string;
+    documento_referencia: string;
+    status: string;
+  }) => {
     try {
-      const novoEstoque = await estoqueService.create(estoque);
-      setEstoque(prev => [novoEstoque, ...prev]);
-      return novoEstoque;
+      console.log('[useEstoque] Criando item de estoque:', itemData);
+      
+      const response = await apiClient.post<{message: string, id?: number}>('/api/estoque', itemData);
+      
+      console.log('[useEstoque] Item criado:', response.data);
+      
+      // Recarregar a lista após criar
+      await fetchEstoque();
+      
+      return response.data;
     } catch (err) {
+      console.error('[useEstoque] Erro ao criar item:', err);
       throw err;
     }
   };
 
-  const updateEstoque = async (id: number, estoque: Partial<Estoque>) => {
+  const deleteItemEstoque = async (id: number) => {
     try {
-      const estoqueAtualizado = await estoqueService.update(id, estoque);
-      setEstoque(prev => 
-        prev.map(e => e.id === id ? estoqueAtualizado : e)
-      );
-      return estoqueAtualizado;
+      console.log('[useEstoque] Excluindo item:', id);
+      
+      const response = await apiClient.delete<{message: string}>(`/api/estoque/${id}`);
+      
+      console.log('[useEstoque] Item excluído:', response.data);
+      
+      // Recarregar a lista após excluir
+      await fetchEstoque();
+      
+      return response.data;
     } catch (err) {
+      console.error('[useEstoque] Erro ao excluir item:', err);
       throw err;
     }
-  };
-
-  const deleteEstoque = async (id: number) => {
-    try {
-      await estoqueService.delete(id);
-      setEstoque(prev => prev.filter(e => e.id !== id));
-    } catch (err) {
-      throw err;
-    }
-  };
-
-  const updateQuantidade = async (id: number, quantidade: number) => {
-    try {
-      const estoqueAtualizado = await estoqueService.updateQuantidade(id, quantidade);
-      setEstoque(prev => 
-        prev.map(e => e.id === id ? estoqueAtualizado : e)
-      );
-      return estoqueAtualizado;
-    } catch (err) {
-      throw err;
-    }
-  };
-
-  const getEstoquePorProduto = (produtoId: number): Estoque[] => {
-    return estoque.filter(e => e.id_produto === produtoId);
-  };
-
-  const getTotalQuantidadePorProduto = (produtoId: number): number => {
-    return estoque
-      .filter(e => e.id_produto === produtoId && e.status === 'disponível')
-      .reduce((total, e) => total + e.quantidade, 0);
   };
 
   useEffect(() => {
     fetchEstoque();
-  }, [params.page, params.limit, params.search, params.status, params.produto]);
+  }, [params.page, params.limit, params.search, params.status]);
 
   return {
-    estoque,
+    itensEstoque,
     loading,
     error,
     total,
     totalPages,
     refetch: fetchEstoque,
-    createEstoque,
-    updateEstoque,
-    deleteEstoque,
-    updateQuantidade,
-    getEstoquePorProduto,
-    getTotalQuantidadePorProduto,
+    createItemEstoque,
+    deleteItemEstoque
   };
 }

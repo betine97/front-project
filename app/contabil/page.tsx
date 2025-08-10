@@ -925,12 +925,7 @@ export default function ContabilPage() {
                       </div>
                     </div>
                     <div className="absolute top-3 right-3">
-                      <Tooltip content={
-                        <div>
-                          <div className="font-bold">Atividades do dia a dia da logística</div>
-                          <div className="mt-2">Exemplo: Serviço de uso recorrente ou de curto prazo, necessário para tocar o negócio no dia a dia.</div>
-                        </div>
-                      } position="bottom">
+                      <Tooltip content="Atividades do dia a dia da logística - Exemplo: Serviço de uso recorrente ou de curto prazo, necessário para tocar o negócio no dia a dia." position="bottom">
                         <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
                       </Tooltip>
                     </div>
@@ -978,12 +973,7 @@ export default function ContabilPage() {
                       </div>
                     </div>
                     <div className="absolute top-3 right-3">
-                      <Tooltip content={
-                        <div>
-                          <div className="font-bold">Projetos de expansão ou compra de ativos logísticos</div>
-                          <div className="mt-2">Exemplo: Aquisição ou melhoria de um ativo de longo prazo (ou gera direito econômico duradouro).</div>
-                        </div>
-                      } position="bottom">
+                      <Tooltip content="Projetos de expansão ou compra de ativos logísticos - Exemplo: Aquisição ou melhoria de um ativo de longo prazo (ou gera direito econômico duradouro)." position="bottom">
                         <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
                       </Tooltip>
                     </div>
@@ -1013,12 +1003,7 @@ export default function ContabilPage() {
                       </div>
                     </div>
                     <div className="absolute top-3 right-3">
-                      <Tooltip content={
-                        <div>
-                          <div className="font-bold">Entradas/saídas ligadas a empréstimos para logística</div>
-                          <div className="mt-2">Exemplo: Serviço vinculado a captar ou pagar recursos de terceiros.</div>
-                        </div>
-                      } position="bottom">
+                      <Tooltip content="Entradas/saídas ligadas a empréstimos para logística - Exemplo: Serviço vinculado a captar ou pagar recursos de terceiros." position="bottom">
                         <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
                       </Tooltip>
                     </div>
@@ -1367,12 +1352,7 @@ export default function ContabilPage() {
                             return total > 0 ? `${ativas}/${total} ativas` : 'Nenhuma conta cadastrada';
                           })()}
                         </span>
-                        <Tooltip content={
-                          <div>
-                            <div className="font-bold">Atividades do dia a dia da logística</div>
-                            <div className="mt-2">Exemplo: frete, armazenamento de estoque</div>
-                          </div>
-                        } position="right">
+                        <Tooltip content="Atividades do dia a dia da logística - Exemplo: frete, armazenamento de estoque" position="right">
                           <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
                         </Tooltip>
                       </div>
@@ -1485,12 +1465,7 @@ export default function ContabilPage() {
                             return total > 0 ? `${ativas}/${total} ativas` : 'Nenhuma conta cadastrada';
                           })()}
                         </span>
-                        <Tooltip content={
-                          <div>
-                            <div className="font-bold">Projetos de expansão ou compra de ativos logísticos</div>
-                            <div className="mt-2">Exemplo: construção ou compra de um centro de distribuição, empilhadeiras, sistemas WMS capitalizados</div>
-                          </div>
-                        } position="right">
+                        <Tooltip content="Projetos de expansão ou compra de ativos logísticos - Exemplo: construção ou compra de um centro de distribuição, empilhadeiras, sistemas WMS capitalizados" position="right">
                           <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
                         </Tooltip>
                       </div>
@@ -1559,12 +1534,7 @@ export default function ContabilPage() {
                             return total > 0 ? `${ativas}/${total} ativas` : 'Nenhuma conta cadastrada';
                           })()}
                         </span>
-                        <Tooltip content={
-                          <div>
-                            <div className="font-bold">Entradas/saídas ligadas a empréstimos para logística</div>
-                            <div className="mt-2">Exemplo: levantamento de empréstimo para financiar a frota / pagamento de parcelas desse financiamento</div>
-                          </div>
-                        } position="right">
+                        <Tooltip content="Entradas/saídas ligadas a empréstimos para logística - Exemplo: levantamento de empréstimo para financiar a frota / pagamento de parcelas desse financiamento" position="right">
                           <Info className="w-4 h-4 text-gray-400 hover:text-gray-600 cursor-pointer" />
                         </Tooltip>
                       </div>

@@ -968,7 +968,7 @@ export default function FinanceiroPage() {
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{conta.nome_cliente_fornecedor}</div>
+                            <div className="text-sm text-gray-900">{conta.id_cliente_fornecedor}</div>
                             <div className="text-xs text-gray-500">{conta.id_cliente_fornecedor}</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">

@@ -47,22 +47,33 @@ class ApiClient {
         let errorData = {};
         
         try {
-          errorData = await response.json();
-          console.log('[API] Error data from backend:', errorData);
-          
-          if ((errorData as any)?.error) {
-            errorMessage = (errorData as any).error;
-          } else if ((errorData as any)?.message) {
-            errorMessage = (errorData as any).message;
+          const contentType = response.headers.get('content-type');
+          if (contentType && contentType.includes('application/json')) {
+            errorData = await response.json();
+            console.log('[API] Error data from backend:', errorData);
+            
+            if ((errorData as any)?.error) {
+              errorMessage = (errorData as any).error;
+            } else if ((errorData as any)?.message) {
+              errorMessage = (errorData as any).message;
+            }
+          } else {
+            // Se não for JSON, tentar como texto
+            const errorText = await response.text();
+            console.log('[API] Error text from backend:', errorText);
+            if (errorText) {
+              errorMessage = errorText;
+            }
           }
         } catch (parseError) {
-          console.log('[API] Could not parse error response as JSON');
+          console.log('[API] Could not parse error response:', parseError);
         }
         
         // Criar erro com informações completas
         const error = new Error(errorMessage) as any;
         error.response = {
           status: response.status,
+          statusText: response.statusText,
           data: errorData
         };
         
@@ -102,6 +113,7 @@ class ApiClient {
   }
 
   async post<T>(endpoint: string, data: any): Promise<ApiResponse<T>> {
+    console.log(`[API] POST ${endpoint} - Body being sent:`, JSON.stringify(data, null, 2));
     return this.request<T>(endpoint, {
       method: 'POST',
       body: JSON.stringify(data),

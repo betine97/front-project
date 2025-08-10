@@ -64,6 +64,7 @@ export function useProdutos(params: UseProdutosParams = {}) {
     descricao: string;
     status: string;
     preco_venda: number;
+    id_fornecedor: number;
   }) => {
     try {
       const result = await produtosService.create(produto);

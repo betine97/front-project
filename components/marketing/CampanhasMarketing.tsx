@@ -22,12 +22,24 @@ import {
 } from 'lucide-react';
 import { Campanha } from '../../types/entities';
 import { formatCurrency } from '../../lib/utils';
+import { useCampanhas } from '../../hooks/useCampanhas';
+import { usePublicos } from '../../hooks/usePublicos';
+import { NovaCampanhaModal } from './NovaCampanhaModal';
+import { CriarCampanhaData } from '../../lib/services/campanhas.service';
 
 export function CampanhasMarketing() {
   const [activeTab, setActiveTab] = useState<'ativas' | 'todas' | 'rascunhos'>('ativas');
+  const [showModal, setShowModal] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
 
-  // Dados mockados para demonstração
-  const campanhas: Campanha[] = [
+  // Hook para gerenciar campanhas
+  const { campanhas, total, totalPages, loading, error, criarCampanha, deletarCampanha } = useCampanhas();
+  
+  // Hook para buscar públicos (para mostrar nomes em vez de IDs)
+  const { publicos } = usePublicos({ autoFetch: true });
+
+  // Dados mockados para demonstração (manter por enquanto para fallback)
+  const campanhasMockadas: Campanha[] = [
     {
       id: 1,
       nome: 'Black Friday Pet 2024',
@@ -117,6 +129,60 @@ export function CampanhasMarketing() {
     }
   ];
 
+  // Usar dados reais se disponíveis, senão usar mockados
+  const campanhasParaExibir = campanhas.length > 0 ? campanhas : campanhasMockadas;
+
+  // Função para obter nome do público pelo ID
+  const getPublicoNome = (publicoId: number | string): string => {
+    const publico = publicos.find(p => p.id === Number(publicoId));
+    return publico ? publico.nome : `Público ${publicoId}`;
+  };
+
+  // Função para formatar data de forma consistente
+  const formatarDataConsistente = (dataString: string): string => {
+    if (!dataString) return 'N/A';
+    try {
+      const date = new Date(dataString);
+      const dia = date.getDate().toString().padStart(2, '0');
+      const mes = (date.getMonth() + 1).toString().padStart(2, '0');
+      const ano = date.getFullYear().toString();
+      return `${dia}/${mes}/${ano}`;
+    } catch (error) {
+      return 'Data inválida';
+    }
+  };
+
+  const handleCriarCampanha = async (data: CriarCampanhaData, publicosIds?: number[]) => {
+    try {
+      setModalLoading(true);
+      const resposta = await criarCampanha(data, publicosIds);
+      setShowModal(false);
+      
+      // Mostrar mensagem de sucesso com informações sobre públicos
+      const mensagemPublicos = publicosIds && publicosIds.length > 0 
+        ? ` com ${publicosIds.length} público(s) vinculado(s)`
+        : '';
+      
+      alert(`${resposta.message} (ID: ${resposta.id_campanha})${mensagemPublicos}`);
+    } catch (error) {
+      console.error('Erro ao criar campanha:', error);
+      alert('Erro ao criar campanha. Verifique se a API está rodando em localhost:8080');
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
+  const handleDeletarCampanha = async (id: number, nome: string) => {
+    if (confirm(`Tem certeza que deseja excluir a campanha "${nome}"?`)) {
+      try {
+        await deletarCampanha(id);
+      } catch (error) {
+        console.error('Erro ao deletar campanha:', error);
+        // O erro já é tratado no hook
+      }
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'ativa': return 'green';
@@ -163,7 +229,7 @@ export function CampanhasMarketing() {
     }
   };
 
-  const filteredCampanhas = campanhas.filter(campanha => {
+  const filteredCampanhas = campanhasParaExibir.filter(campanha => {
     switch (activeTab) {
       case 'ativas': return campanha.status === 'ativa';
       case 'rascunhos': return campanha.status === 'rascunho';
@@ -172,10 +238,53 @@ export function CampanhasMarketing() {
     }
   });
 
-  const totalOrcamento = campanhas.reduce((sum, c) => sum + c.orcamento, 0);
-  const totalGasto = campanhas.reduce((sum, c) => sum + c.gasto_atual, 0);
-  const campanhasAtivas = campanhas.filter(c => c.status === 'ativa').length;
-  const mediaROAS = campanhas.filter(c => c.metricas.roas > 0).reduce((sum, c) => sum + c.metricas.roas, 0) / campanhas.filter(c => c.metricas.roas > 0).length || 0;
+  const totalOrcamento = campanhasParaExibir.reduce((sum, c) => sum + (c.orcamento || 0), 0);
+  const totalGasto = campanhasParaExibir.reduce((sum, c) => sum + (c.gasto_atual || 0), 0);
+  const campanhasAtivas = campanhasParaExibir.filter(c => c.status === 'ativa').length;
+  
+  // Calcular ROAS médio com verificação de segurança
+  const campanhasComROAS = campanhasParaExibir.filter(c => c.metricas && c.metricas.roas && c.metricas.roas > 0);
+  const mediaROAS = campanhasComROAS.length > 0 
+    ? campanhasComROAS.reduce((sum, c) => sum + c.metricas.roas, 0) / campanhasComROAS.length 
+    : 0;
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="h-20 bg-gray-200 rounded-lg"></div>
+            ))}
+          </div>
+          <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-96 bg-gray-200 rounded-lg"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+          <p className="text-red-800 mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -240,7 +349,7 @@ export function CampanhasMarketing() {
           }`}
         >
           <Play className="w-4 h-4 inline mr-2" />
-          Ativas ({campanhas.filter(c => c.status === 'ativa').length})
+          Ativas ({campanhasParaExibir.filter(c => c.status === 'ativa').length})
         </button>
         <button
           onClick={() => setActiveTab('rascunhos')}
@@ -251,7 +360,7 @@ export function CampanhasMarketing() {
           }`}
         >
           <Edit className="w-4 h-4 inline mr-2" />
-          Rascunhos ({campanhas.filter(c => c.status === 'rascunho').length})
+          Rascunhos ({campanhasParaExibir.filter(c => c.status === 'rascunho').length})
         </button>
         <button
           onClick={() => setActiveTab('todas')}
@@ -262,7 +371,7 @@ export function CampanhasMarketing() {
           }`}
         >
           <Megaphone className="w-4 h-4 inline mr-2" />
-          Todas ({campanhas.length})
+          Todas ({campanhasParaExibir.length})
         </button>
       </div>
 
@@ -271,7 +380,9 @@ export function CampanhasMarketing() {
         {filteredCampanhas.map((campanha) => {
           const statusColor = getStatusColor(campanha.status);
           const tipoColor = getTipoColor(campanha.tipo);
-          const progressoOrcamento = (campanha.gasto_atual / campanha.orcamento) * 100;
+          const progressoOrcamento = campanha.orcamento && campanha.orcamento > 0 
+            ? ((campanha.gasto_atual || 0) / campanha.orcamento) * 100 
+            : 0;
 
           return (
             <div key={campanha.id} className="card hover:shadow-lg transition-all duration-200">
@@ -312,7 +423,10 @@ export function CampanhasMarketing() {
                         <Play className="w-3 h-3" />
                       </button>
                     ) : null}
-                    <button className="p-1 text-gray-400 hover:text-red-600 rounded">
+                    <button 
+                      className="p-1 text-gray-400 hover:text-red-600 rounded"
+                      onClick={() => handleDeletarCampanha(campanha.id, campanha.nome)}
+                    >
                       <Trash2 className="w-3 h-3" />
                     </button>
                   </div>
@@ -327,7 +441,7 @@ export function CampanhasMarketing() {
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600">Impressões</span>
                         <span className="font-semibold text-gray-900">
-                          {campanha.metricas.impressoes.toLocaleString()}
+                          {campanha.metricas?.impressoes ? campanha.metricas.impressoes.toLocaleString() : '0'}
                         </span>
                       </div>
                     </div>
@@ -335,7 +449,7 @@ export function CampanhasMarketing() {
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600">CTR</span>
                         <span className="font-semibold text-gray-900">
-                          {campanha.metricas.ctr.toFixed(1)}%
+                          {campanha.metricas?.ctr ? campanha.metricas.ctr.toFixed(1) : '0.0'}%
                         </span>
                       </div>
                     </div>
@@ -343,7 +457,7 @@ export function CampanhasMarketing() {
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600">Conversões</span>
                         <span className="font-semibold text-gray-900">
-                          {campanha.metricas.conversoes}
+                          {campanha.metricas?.conversoes || 0}
                         </span>
                       </div>
                     </div>
@@ -351,7 +465,7 @@ export function CampanhasMarketing() {
                       <div className="flex items-center justify-between">
                         <span className="text-gray-600">ROAS</span>
                         <span className="font-semibold text-green-600">
-                          {campanha.metricas.roas.toFixed(1)}x
+                          {campanha.metricas?.roas ? campanha.metricas.roas.toFixed(1) : '0.0'}x
                         </span>
                       </div>
                     </div>
@@ -363,7 +477,7 @@ export function CampanhasMarketing() {
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-gray-600">Orçamento</span>
                     <span className="font-semibold text-gray-900">
-                      {formatCurrency(campanha.gasto_atual)} / {formatCurrency(campanha.orcamento)}
+                      {formatCurrency(campanha.gasto_atual || 0)} / {formatCurrency(campanha.orcamento || 0)}
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-1.5">
@@ -381,27 +495,49 @@ export function CampanhasMarketing() {
                 <div className="space-y-2">
                   <p className="text-xs font-medium text-gray-700">Público-alvo:</p>
                   <div className="flex flex-wrap gap-1">
-                    {campanha.publico_alvo.slice(0, 2).map((publico, index) => (
-                      <span 
-                        key={index}
-                        className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-orange-50 text-orange-700 border border-orange-200"
-                      >
-                        <Target className="w-3 h-3 mr-1" />
-                        {publico}
-                      </span>
-                    ))}
-                    {campanha.publico_alvo.length > 2 && (
-                      <span className="text-xs text-gray-500">+{campanha.publico_alvo.length - 2} mais</span>
-                    )}
+                    {/* Usar públicos vinculados da API se disponíveis, senão usar dados mockados */}
+                    {(campanha.publicos_vinculados && campanha.publicos_vinculados.length > 0 ? 
+                      campanha.publicos_vinculados : 
+                      (campanha.publico_alvo || [])
+                    ).slice(0, 2).map((publico, index) => {
+                      // Se publico é um número (ID), buscar o nome; se é string, usar diretamente
+                      const nomePublico = typeof publico === 'number' ? getPublicoNome(publico) : publico;
+                      return (
+                        <span 
+                          key={index}
+                          className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-orange-50 text-orange-700 border border-orange-200"
+                        >
+                          <Target className="w-3 h-3 mr-1" />
+                          {nomePublico}
+                        </span>
+                      );
+                    })}
+                    
+                    {/* Mostrar "+X mais" baseado nos públicos vinculados ou mockados */}
+                    {(() => {
+                      const publicosParaExibir = campanha.publicos_vinculados && campanha.publicos_vinculados.length > 0 ? 
+                        campanha.publicos_vinculados : 
+                        (campanha.publico_alvo || []);
+                      
+                      if (publicosParaExibir.length > 2) {
+                        return <span className="text-xs text-gray-500">+{publicosParaExibir.length - 2} mais</span>;
+                      }
+                      
+                      if (publicosParaExibir.length === 0) {
+                        return <span className="text-xs text-gray-400 italic">Nenhum público definido</span>;
+                      }
+                      
+                      return null;
+                    })()}
                   </div>
                 </div>
 
                 {/* Datas */}
                 <div className="mt-3 pt-3 border-t border-gray-100 text-xs text-gray-500">
                   <div className="flex items-center justify-between">
-                    <span>Início: {new Date(campanha.data_inicio).toLocaleDateString('pt-BR')}</span>
+                    <span>Início: {formatarDataConsistente(campanha.data_inicio)}</span>
                     {campanha.data_fim && (
-                      <span>Fim: {new Date(campanha.data_fim).toLocaleDateString('pt-BR')}</span>
+                      <span>Fim: {formatarDataConsistente(campanha.data_fim)}</span>
                     )}
                   </div>
                 </div>
@@ -418,7 +554,10 @@ export function CampanhasMarketing() {
             </div>
             <h3 className="text-sm font-semibold text-gray-900 mb-1">Nova Campanha</h3>
             <p className="text-xs text-gray-500 mb-3">Crie uma nova campanha de marketing</p>
-            <button className="btn-primary text-xs px-3 py-2">
+            <button 
+              className="btn-primary text-xs px-3 py-2"
+              onClick={() => setShowModal(true)}
+            >
               Criar Campanha
             </button>
           </div>
@@ -452,6 +591,14 @@ export function CampanhasMarketing() {
           </div>
         </div>
       </div>
+
+      {/* Modal de Nova Campanha */}
+      <NovaCampanhaModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onSave={handleCriarCampanha}
+        loading={modalLoading}
+      />
     </div>
   );
 }

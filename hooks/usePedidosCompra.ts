@@ -24,27 +24,56 @@ export function usePedidosCompra(params: UsePedidosCompraParams = {}) {
     setError(null);
 
     try {
-      const [pedidosResponse, itensResponse] = await Promise.all([
-        pedidosCompraService.getAll(params),
-        pedidosCompraService.getAllItens()
-      ]);
+      console.log('[usePedidosCompra] Buscando pedidos com params:', params);
+      const pedidosResponse = await pedidosCompraService.getAll(params);
+      
+      console.log('[usePedidosCompra] Resposta recebida:', {
+        total: pedidosResponse.total,
+        dataLength: pedidosResponse.data.length,
+        page: pedidosResponse.page,
+        limit: pedidosResponse.limit,
+        totalPages: pedidosResponse.totalPages
+      });
       
       setPedidos(pedidosResponse.data);
-      setItens(itensResponse);
       setTotal(pedidosResponse.total);
       setTotalPages(pedidosResponse.totalPages);
       setLoading('success');
+      
+      // Carregar itens apenas se houver pedidos (opcional)
+      if (pedidosResponse.data.length > 0) {
+        try {
+          const itensResponse = await pedidosCompraService.getAllItens();
+          setItens(itensResponse);
+        } catch (itensError) {
+          console.warn('[usePedidosCompra] Erro ao carregar itens (não crítico):', itensError);
+          setItens([]); // Continuar sem itens se houver erro
+        }
+      } else {
+        setItens([]);
+      }
     } catch (err) {
+      console.error('[usePedidosCompra] Erro:', err);
       setError(err instanceof Error ? err.message : 'Erro ao carregar pedidos de compra');
       setLoading('error');
     }
   };
 
-  const createPedido = async (pedido: Omit<PedidoCompra, 'id'>) => {
+  const createPedido = async (pedido: {
+    id_fornecedor: number;
+    data_pedido: string;
+    data_entrega: string;
+    valor_frete: number;
+    custo_pedido: number;
+    valor_total: number;
+    descricao_pedido: string;
+    status: string;
+  }) => {
     try {
-      const novoPedido = await pedidosCompraService.create(pedido);
-      setPedidos(prev => [novoPedido, ...prev]);
-      return novoPedido;
+      const result = await pedidosCompraService.create(pedido);
+      // Recarregar a lista após criar
+      await fetchPedidos();
+      return result;
     } catch (err) {
       throw err;
     }
@@ -71,6 +100,17 @@ export function usePedidosCompra(params: UsePedidosCompraParams = {}) {
     }
   };
 
+  const cancelarPedido = async (id: number) => {
+    try {
+      const result = await pedidosCompraService.cancelar(id);
+      // Recarregar a lista após cancelar para atualizar o status
+      await fetchPedidos();
+      return result;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   const getItensByPedido = (pedidoId: number): ItemPedido[] => {
     return itens.filter(item => item.id_pedido === pedidoId);
   };
@@ -90,6 +130,7 @@ export function usePedidosCompra(params: UsePedidosCompraParams = {}) {
     createPedido,
     updatePedido,
     deletePedido,
+    cancelarPedido,
     getItensByPedido,
   };
 }

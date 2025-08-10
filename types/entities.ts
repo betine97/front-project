@@ -134,6 +134,7 @@ export interface Campanha {
   orcamento: number;
   gasto_atual: number;
   publico_alvo: string[];
+  publicos_vinculados?: string[]; // Nomes dos públicos vinculados via API
   metricas: {
     impressoes: number;
     cliques: number;
